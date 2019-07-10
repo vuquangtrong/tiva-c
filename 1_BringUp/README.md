@@ -20,6 +20,7 @@ It also be used to refresh LCD, read inputs, send data. You can add conditions b
 
 In case you set SysTick to a higher frequency (increase _SYSTICK_PER_SECOND_), you should move "slow tasks" to an different timer routine or main loop. This project just shows you how to schedule a task using a simple timer.
 
+![bringup.png](./bringup.png)
 
 **Hardware**
 
@@ -31,8 +32,9 @@ In case you set SysTick to a higher frequency (increase _SYSTICK_PER_SECOND_), y
 
 - Install [TI's Code Composer Studio](http://www.ti.com/tool/ccstudio)
 - Install [TivaWare for C Series](http://www.ti.com/tool/sw-tm4c)
-- Edit file [vars.ini](/vars.ini) by changing the path to your installed TivaWare folder
-- Import this *1_BringUp* project into CCS
+- Include your Tivaware folder into project, you can use the macro **TI_TIVAWARE_ROOT** in _vars.ini_
+- Change the heap size as you want
+- To use _ROM_function()_ you must define part number of this kit __TARGET_IS_TM4C123_RB1__
 - You can flash to the board via CCS or TI's [LM Flash Programmer](http://www.ti.com/tool/lmflashprogrammer)
 
 **Licensing**

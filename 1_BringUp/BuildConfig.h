@@ -12,6 +12,8 @@
 
 #define HW_VERSION "0.0"
 #define SW_VERSION "0.1"
-#define SYSTICK_PER_SECOND 30 // for heart bit service
+#define SYSTICKS_PER_SECOND 30 // for heart-beat service
+                               // SysTick timer is a 24 bits, therefore, the minimum heart-beat rate is 5 Hz when running at 80MHz
+                               // (80MHz / (2^24)) = 5
 
 #endif /* BUILDCONFIG_H_ */

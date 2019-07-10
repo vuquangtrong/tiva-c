@@ -42,7 +42,7 @@ void LedIndicator::initLedIndicator()
     __isLedIndicatorInitialized = true;
 }
 
-void LedIndicator::outputAliveSignal()
+void LedIndicator::outputHeartBeatSignal()
 {
     GPIOPinWrite(GPIO_PORTF_BASE, LED_BLUE, LED_BLUE);
     SysCtlDelay(1000);

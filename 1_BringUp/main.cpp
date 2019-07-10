@@ -14,7 +14,7 @@
 
 /* README
  *
- * Set --heap_size to use dynamic memory allocation
+ * Set --heap_size to use dynamic memory allocation, currently it is set to 512 bytes
  *
  */
 
@@ -27,7 +27,8 @@ void main()
     InitSystem();
 
     // start to run
-    Logger::getIntance().println("Henry Demo");
+    //Logger::getIntance().print("\033[2J"); // clear screen
+    Logger::getIntance().println("\n\rBring Up");
     Logger::getIntance().print("HW: ");
     Logger::getIntance().println(HW_VERSION);
     Logger::getIntance().print("SW: ");

@@ -24,7 +24,7 @@ class LedIndicator
             return __intance;
         }
 
-        void outputAliveSignal();
+        void outputHeartBeatSignal();
 
     private:
         enum

@@ -119,7 +119,6 @@ class Button
         uint32_t _debounce_delay;
         uint32_t _singleClick_delay;
         uint32_t _longClick_delay;
-        uint32_t _systick_period;
         uint32_t _lastTransition;
         uint32_t _tick;
         State _state;

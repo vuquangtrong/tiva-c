@@ -13,6 +13,14 @@
 
 void SysTickInterruptHandler()
 {
-    LedIndicator::getIntance().outputAliveSignal();
+    static uint32_t __tick_count = 0;
+
+    __tick_count++;
+    if(__tick_count == SYSTICKS_PER_SECOND)
+    {
+        __tick_count = 0;
+        LedIndicator::getIntance().outputHeartBeatSignal();
+    }
+
     UserInput::getIntance().checkInput();
 }

@@ -15,13 +15,13 @@
 #include "Logger/Logger.h"
 
 Button::Button() :
-        _active_level(ACTIVE_LOW), _tick(0), _state(StateIdle), _port(0), _pin(0), _buttonHandler(0)
+        _active_level(ACTIVE_LOW), _tick(0), _state(StateIdle), _port(0), _pin(0), _buttonHandler(0), _new(false), _lastTransition(0)
 {
     // calculate delay as a number of of SYSTICK
-    _debounce_delay = (DEBOUNCE_DELAY * SYSTICK_PER_SECOND) / 1000;
-    _singleClick_delay = (SINGLECLICK_DELAY * SYSTICK_PER_SECOND) / 1000;
-    _longClick_delay = (LONGCLICK_DELAY * SYSTICK_PER_SECOND) / 1000;
-    Logger::getIntance().printf("Button detection settings: %d %d %d\n\r", _debounce_delay, _singleClick_delay, _longClick_delay);
+    _debounce_delay = (DEBOUNCE_DELAY * SYSTICKS_PER_SECOND) / 1000;
+    _singleClick_delay = (SINGLECLICK_DELAY * SYSTICKS_PER_SECOND) / 1000;
+    _longClick_delay = (LONGCLICK_DELAY * SYSTICKS_PER_SECOND) / 1000;
+    //Logger::getIntance().printf("Button detection settings: %d %d %d\n\r", _debounce_delay, _singleClick_delay, _longClick_delay);
 }
 
 void Button::checkState()
