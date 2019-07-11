@@ -31,11 +31,7 @@ void main()
 
     // start to run
     //Logger::getIntance().print("\033[2J"); // clear screen
-#ifdef USE_SLEEP_MODE
-    Logger::getIntance().println("\n\rSleep Mode - ON");
-#else
-    Logger::getIntance().println("\n\rSleep Mode - Off");
-#endif
+    Logger::getIntance().println("\n\rFwUpdate");
     Logger::getIntance().print("HW: ");
     Logger::getIntance().println(HW_VERSION);
     Logger::getIntance().print("SW: ");
