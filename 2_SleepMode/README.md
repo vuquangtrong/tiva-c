@@ -1,7 +1,7 @@
 Tiva C TM4C123G LaunchPad Sleep Mode
 ====================================
 
-This sleep mode project shows you how to start put the processor into sleep mode
+This sleep mode project shows you how to put the processor into sleep mode
 
 In the [*BringUp*](../1_BringUp) project, main loop calls `WaitForInterrupt();` to enter sleep mode.
 Does it actually do what you want?
