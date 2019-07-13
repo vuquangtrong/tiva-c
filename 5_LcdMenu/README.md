@@ -9,6 +9,10 @@ This project shows you how to control Nokia 5110 LCD to display a menu.
 - Screen is only updated when user interacts with buttons, this keesp CPU idle when not used
 - You will decide to allow a peripheral runs when CPU sleeps
 
+![menu.jpg](./menu.jpg)
+![settings.jpg](./settings.jpg)
+![about.jpg](./about.jpg)
+
 **Hardware**
 
 - [Texas Instruments Tiva C Series TM4C123G LaunchPad](http://www.ti.com/tool/ek-tm4c123gxl)
