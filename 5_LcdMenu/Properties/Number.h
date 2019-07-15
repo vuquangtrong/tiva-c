@@ -25,7 +25,7 @@ public:
         _min = -5;
     }
 
-    void setNumber(int8_t number, int8_t max, int8_t min)
+    void setNumber(int16_t number, int16_t max, int16_t min)
     {
         _number = number;
         _max = max;
@@ -69,9 +69,9 @@ public:
 
 private:
     char _text[Menu::MAX_CHARS_PER_ROW + 1];
-    int8_t _number;
-    int8_t _max;
-    int8_t _min;
+    int16_t _number;
+    int16_t _max;
+    int16_t _min;
 };
 
 #endif /* SYSTEM_MAINMENU_NUMBER_H_ */

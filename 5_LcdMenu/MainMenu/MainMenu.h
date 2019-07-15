@@ -66,6 +66,9 @@ private:
     MenuItem _menuItem_setting_backlight;
     Switch _switch_setting_backlight;
 
+    MenuItem _menuItem_setting_brightness;
+    Number _switch_setting_brightness;
+
     MenuItem _menuItem_about_hw_ver;
     Label _label_about_hw_ver;
 

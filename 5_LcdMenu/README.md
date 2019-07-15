@@ -1,18 +1,21 @@
-Tiva C TM4C123G LaunchPad LCD and Menu
+Tiva C TM4C123G LaunchPad Display Menu
 ======================================
 
-This project shows you how to control Nokia 5110 LCD to display a menu.
-- Nokia5110 LCD is connected to SSI0 on TM4C123, running at 4Mbps
+This project shows you how to control Nokia 5110 LCD or SH1106 OLED to display a menu.
+- Display is connected to SSI0 on TM4C123, running at 4Mbps
 - Menu is designed to add MenuItem easily
 - Each MenuItem has its own property which can be one of Label, Number, Switch or your Property inherited class
 - User input will send actions to MainMenu to select up/down, enter/exit menu, change value of selected item, with single click, double click, and long press
 - Screen is only updated when user interacts with buttons, this keesp CPU idle when not used
 - You will decide to allow a peripheral runs when CPU sleeps
 
+LCD
 ![menu.jpg](./menu.jpg)
 ![settings.jpg](./settings.jpg)
 ![about.jpg](./about.jpg)
 
+OLED 128x64
+![oled.jpg](./oled.jpg)
 **Hardware**
 
 - [Texas Instruments Tiva C Series TM4C123G LaunchPad](http://www.ti.com/tool/ek-tm4c123gxl)

@@ -22,12 +22,12 @@
                   +---------------+
     btn_left  PF0-|               |-PA0 uart_rx
     led_red   PF1-|               |-PA1 uart_tx
-    led_blue  PF2-|               |-PA2 lcd_clk
-    led_green PF2-|               |-PA3 lcd_ce
+    led_blue  PF2-|               |-PA2 lcd_clk oled_sck
+    led_green PF2-|               |-PA3 lcd_ce  oled_cs
     btn_right PF4-|               |-PA4 lcd_bl
-                 -|               |-PA5 lcd_din
-                 -|               |-PA6 lcd_dc
-                 -|               |-PA7 lcd_rst
+                 -|               |-PA5 lcd_din oled_sda
+                 -|               |-PA6 lcd_dc  oled_dc
+                 -|               |-PA7 lcd_rst oled_rst
     usb_pd    PD4-|               |-
     usb_pm    PD5-|               |-
                   +---------------+

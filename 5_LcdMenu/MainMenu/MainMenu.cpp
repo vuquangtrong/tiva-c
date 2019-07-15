@@ -11,7 +11,11 @@
 #include "Menu/Menu.h"
 #include "Menu/MenuItem.h"
 #include "Helper/ustdlib.h"
+#if USE_LCD_NOKIA5110
 #include "Display/Nokia5110.h"
+#elif USE_OLED_SH1106
+#include "Display/SH1106.h"
+#endif
 #include "Logger/Logger.h"
 
 MainMenu::MainMenu()
@@ -23,7 +27,11 @@ MainMenu::MainMenu()
 
     _menu_settings.addMenuItem(&_menuItem_setting_volume);
     _menu_settings.addMenuItem(&_menuItem_setting_balance);
+#if USE_LCD_NOKIA5110
     _menu_settings.addMenuItem(&_menuItem_setting_backlight);
+#elif USE_OLED_SH1106
+    _menu_settings.addMenuItem(&_menuItem_setting_brightness);
+#endif
 
     _menu_about.addMenuItem(&_menuItem_about_hw_ver);
     _menu_about.addMenuItem(&_menuItem_about_sw_ver);
@@ -45,10 +53,17 @@ MainMenu::MainMenu()
     _number_setting_volume.setText("Volume");
     _number_setting_volume.setNumber(5, 10, 0);
 
+#if USE_LCD_NOKIA5110
     _menuItem_setting_backlight.setParentMenu(&_root);
     _menuItem_setting_backlight.setProperty(&_switch_setting_backlight);
     _switch_setting_backlight.setText("Backlight");
     _switch_setting_backlight.setChecked(true);
+#elif USE_OLED_SH1106
+    _menuItem_setting_brightness.setParentMenu(&_root);
+    _menuItem_setting_brightness.setProperty(&_switch_setting_brightness);
+    _switch_setting_brightness.setText("Brightness");
+    _switch_setting_brightness.setNumber(0x7f, 0xff, 0x00);
+#endif
 
     _menuItem_about_hw_ver.setParentMenu(&_root);
     _menuItem_about_hw_ver.setProperty(&_label_about_hw_ver);
@@ -67,8 +82,6 @@ void MainMenu::drawMenu()
 {
     if (_isChanged)
     {
-        //Logger::getIntance().println("draw");
-
         char line[Menu::MAX_CHARS_PER_ROW + 2 + 1];
         for (uint8_t i = 0; i < Menu::MAX_ROWS; i++)
         {
@@ -86,7 +99,11 @@ void MainMenu::drawMenu()
                 y++;
             }
             line[Menu::MAX_CHARS_PER_ROW + 2] = 0;
+#if USE_LCD_NOKIA5110
             Nokia5110::getIntance().print(0, i, line);
+#elif USE_OLED_SH1106
+            SH1106::getIntance().print(0, i, line);
+#endif
         }
         _isChanged = false;
     }

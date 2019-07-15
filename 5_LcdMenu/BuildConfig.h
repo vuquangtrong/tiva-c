@@ -16,5 +16,7 @@
                                // SysTick timer is a 24 bits, therefore, the minimum heart-beat rate is 5 Hz when running at 80MHz
                                // (80MHz / (2^24)) = 5
 #define USE_SLEEP_MODE
+#define USE_LCD_NOKIA5110   0
+#define USE_OLED_SH1106     1
 
 #endif /* BUILDCONFIG_H_ */
