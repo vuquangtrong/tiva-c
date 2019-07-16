@@ -10,3 +10,4 @@ Please kindly check sub-folders for more project details:
 - `3_Firmware Update` shows you how to switch your board to USB Device Firmware Update mode
 - `4_Boot Loader` requires 2 parts: `BootLoaderUsb` providing USB DFU, `JumpToBootLoader` hooks 2 SW to enter boot loader
 - `5_LCD Menu` shows a menu to user with menu item and controllable settings
+- `6_Audio` uses MCP4921 12b DAC to play sound. it also include Audio Generator to make waves. This project uses uDMA for faster data transfer.
