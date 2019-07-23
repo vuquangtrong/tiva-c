@@ -5,68 +5,75 @@
  *      Author: vqtrong
  */
 
+#include <math.h>
+#include <stddef.h>
+#include <stdint.h>
+#include "driverlib/sysctl.h"
+#include "BuildConfig.h"
 #include "AudioGeneration/AudioMixer.h"
 #include "AudioGeneration/Oscillator.h"
 #include "AudioGeneration/NoteFrequencyTable.h"
-#include <math.h>
-#include <stddef.h>
+#include "Logger/Logger.h"
 
 AudioMixer::AudioMixer() :
-        sampleCount_(0), midiNoteIndex_(NO_MIDI_NOTE_)
+        _sampleCount(0), _midiNoteIndex(NO_MIDI_NOTE)
 {
-    InitializeNoteFrequencyTable();
-    SetupDefaultOscillatorValues();
+    initializeNoteFrequencyTable();
+    setupDefaultOscillatorValues();
 }
 
-void AudioMixer::SetupDefaultOscillatorValues()
+void AudioMixer::setupDefaultOscillatorValues()
 {
-    oscillator2_.SetWaveformType(WaveformType::None);
-    oscillator2_.SetCent(0);
+    _oscillator1.setWaveformType(WaveformType::Sine);
+    _oscillator1.setCent(0);
 
-    oscillator3_.SetWaveformType(WaveformType::None);
-    oscillator3_.SetCent(0);
+    _oscillator2.setWaveformType(WaveformType::None);
+    _oscillator2.setCent(0);
+
+    _oscillator3.setWaveformType(WaveformType::None);
+    _oscillator3.setCent(0);
 }
 
-Oscillator& AudioMixer::GetOscillator1()
+Oscillator& AudioMixer::getOscillator1()
 {
-    return oscillator1_;
+    return _oscillator1;
 }
 
-Oscillator& AudioMixer::GetOscillator2()
+Oscillator& AudioMixer::getOscillator2()
 {
-    return oscillator2_;
+    return _oscillator2;
 }
 
-Oscillator& AudioMixer::GetOscillator3()
+Oscillator& AudioMixer::getOscillator3()
 {
-    return oscillator3_;
+    return _oscillator3;
 }
 
-void AudioMixer::SetMIDINote(uint8_t midiNoteIndex)
+void AudioMixer::setMIDINote(uint8_t midiNoteIndex)
 {
-    if (midiNoteIndex < MIDI_NOTE_COUNT_)
+    if (midiNoteIndex < MIDI_NOTE_COUNT)
     {
-        midiNoteIndex_ = midiNoteIndex;
+        _midiNoteIndex = midiNoteIndex;
     }
     else
     {
-        midiNoteIndex_ = MIDI_NOTE_COUNT_ - 1;
+        _midiNoteIndex = MIDI_NOTE_COUNT - 1;
     }
 }
 
-uint8_t AudioMixer::GetActiveOscillatorCount()
+uint8_t AudioMixer::getActiveOscillatorCount()
 {
     int oscillatorCount = 0;
 
-    if (oscillator1_.GetWaveformType() != None)
+    if (_oscillator1.getWaveformType() != None)
     {
         ++oscillatorCount;
     }
-    if (oscillator2_.GetWaveformType() != None)
+    if (_oscillator2.getWaveformType() != None)
     {
         ++oscillatorCount;
     }
-    if (oscillator3_.GetWaveformType() != None)
+    if (_oscillator3.getWaveformType() != None)
     {
         ++oscillatorCount;
     }
@@ -74,37 +81,44 @@ uint8_t AudioMixer::GetActiveOscillatorCount()
     return oscillatorCount;
 }
 
-void AudioMixer::GetAudioData(uint16_t buffer[], uint32_t bufferSampleSize)
+void AudioMixer::getAudioData(uint16_t buffer[], uint32_t bufferSampleSize)
 {
+    volatile uint32_t i = 0;
+
     // Silent the audio buffer before adding audio to it through the oscillators
-    for (unsigned int i = 0; i < bufferSampleSize; ++i)
+    for (i = 0; i < bufferSampleSize; ++i)
     {
+#if PROBE_AUDIO_WAVE
         buffer[i] = 0;
+#else
+        buffer[i] = 0x7000; /* ACTIVE */
+#endif
     }
 
     // If no note is being played, no audio needed
-    if (midiNoteIndex_ == NO_MIDI_NOTE_)
+    if (_midiNoteIndex == NO_MIDI_NOTE)
     {
         return;
     }
 
-    uint8_t totalOscillatorCount = GetActiveOscillatorCount();
+    uint8_t totalOscillatorCount = getActiveOscillatorCount();
 
-    oscillator1_.MixInOscillatorAudio(buffer, bufferSampleSize,
-                                      totalOscillatorCount, midiNoteIndex_,
-                                      sampleCount_);
-    oscillator2_.MixInOscillatorAudio(buffer, bufferSampleSize,
-                                      totalOscillatorCount, midiNoteIndex_,
-                                      sampleCount_);
-    oscillator3_.MixInOscillatorAudio(buffer, bufferSampleSize,
-                                      totalOscillatorCount, midiNoteIndex_,
-                                      sampleCount_);
+    _oscillator1.MixInOscillatorAudio(buffer, bufferSampleSize,
+                                      totalOscillatorCount, _midiNoteIndex,
+                                      _sampleCount);
+    _oscillator2.MixInOscillatorAudio(buffer, bufferSampleSize,
+                                      totalOscillatorCount, _midiNoteIndex,
+                                      _sampleCount);
+    _oscillator3.MixInOscillatorAudio(buffer, bufferSampleSize,
+                                      totalOscillatorCount, _midiNoteIndex,
+                                      _sampleCount);
 
-    // 12bit DAC
-    for (unsigned int i = 0; i < bufferSampleSize; ++i)
+#if PROBE_AUDIO_WAVE
+    for (i = 0; i < bufferSampleSize; ++i)
     {
-        buffer[i] = (0x7000 | (buffer[i] >> 4));
+        Logger::getInstance().printf("%d\n\r", buffer[i]);
+        SysCtlDelay(200000);
     }
-
-    sampleCount_ += bufferSampleSize;
+#endif
+    _sampleCount += bufferSampleSize;
 }

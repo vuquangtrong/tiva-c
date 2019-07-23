@@ -5,8 +5,9 @@
  *      Author: vqtrong
  */
 
-#include "AudioGeneration/NoteFrequencyTable.h"
 #include <math.h>
+#include "AudioGeneration/NoteFrequencyTable.h"
+
 
 // For more info about the following values please see https://en.wikipedia.org/wiki/MIDI_tuning_standard
 float twoToTheOne12th_ = 1.059463094f;
@@ -20,19 +21,20 @@ const int indexCount = 128;
 float noteFrequency = 0.0;
 float noteFrequencyTable_[indexCount];
 
-void InitializeNoteFrequencyTable()
+void initializeNoteFrequencyTable()
 {
-    volatile int i = 0;
+    volatile uint16_t i = 0;
 
-    for(; i < indexCount; ++i)
+    for (i = 0; i < indexCount; ++i)
     {
-        noteFrequencyTable_[i] = a440Hz_ * powf(twoToTheOne12th_, static_cast<float>(i - a440Index_));
+        noteFrequencyTable_[i] = a440Hz_
+                * powf(twoToTheOne12th_, static_cast<float>(i - a440Index_));
     }
 }
 
-float GetFrequency(uint8_t noteIndex)
+float getFrequency(uint8_t noteIndex)
 {
-    if(noteIndex > indexCount)
+    if (noteIndex > indexCount)
     {
         return 0.0;
     }

@@ -13,12 +13,12 @@
 #include <stdint.h>
 #include "inc/hw_memmap.h"
 #include "driverlib/gpio.h"
-#include "Display.h"
+#include "DisplayInterface.h"
 
-class SH1106: public Display
+class SH1106: public DisplayInterface
 {
 public:
-    enum SETTINGS
+    enum Settings
     {
         WIDTH = 128,
         HEIGHT = 64,
@@ -34,10 +34,10 @@ public:
         DATA = 1
     };
 
-    static SH1106& getIntance()
+    static SH1106& getInstance()
     {
-        static SH1106 __intance;
-        return __intance;
+        static SH1106 __instance;
+        return __instance;
     }
 
     void print(uint8_t col, uint8_t row, const char *msg);

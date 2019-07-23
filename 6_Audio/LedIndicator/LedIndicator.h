@@ -18,16 +18,16 @@
 class LedIndicator
 {
 public:
-    static LedIndicator& getIntance()
+    static LedIndicator& getInstance()
     {
-        static LedIndicator __intance;
-        return __intance;
+        static LedIndicator __instance;
+        return __instance;
     }
 
     void outputHeartBeatSignal();
 
 private:
-    enum
+    enum Settings
     {
         LED_OFF = 0x00,
         LED_RED = GPIO_PIN_1,
@@ -36,7 +36,6 @@ private:
     };
 
     LedIndicator();
-    void initLedIndicator();
 };
 
 #endif /* LEDINDICATOR_LEDINDICATOR_H_ */

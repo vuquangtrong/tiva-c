@@ -17,6 +17,7 @@
 #include "driverlib/ssi.h"
 #include "driverlib/udma.h"
 #include "driverlib/interrupt.h"
+#include "BuildConfig.h"
 #include "AudioOutput.h"
 #include "AudioSample.h"
 #include "Logger/Logger.h"
@@ -41,7 +42,7 @@ void SSI1IntHandler(void)
     if (mode == UDMA_MODE_STOP)
     {
         // refill buffer
-        AudioOutput::getIntance().getAudioMixer()->GetAudioData(
+        AudioOutput::getInstance().getAudioMixer()->getAudioData(
                 __primaryAudioBuffer, AUDIO_BUFFER_SIZE);
         // re-start dma
         uDMAChannelTransferSet(
@@ -56,7 +57,7 @@ void SSI1IntHandler(void)
     if (mode == UDMA_MODE_STOP)
     {
         // refill buffer
-        AudioOutput::getIntance().getAudioMixer()->GetAudioData(
+        AudioOutput::getInstance().getAudioMixer()->getAudioData(
                 __alternateAudioBuffer, AUDIO_BUFFER_SIZE);
         // re-start dma
         uDMAChannelTransferSet(
@@ -71,10 +72,12 @@ void SSI1IntHandler(void)
 AudioOutput::AudioOutput()
 {
     // turn on DAC chip
-    _mcp4921 = &MCP4921::getIntance();
-    _audioMixer.SetMIDINote(69);
+    _mcp4921 = &MCP4921::getInstance();
 
-#ifndef TEST_AUDIO
+    // play middle C as a sample note
+    _audioMixer.setMIDINote(69);
+
+#if !TEST_AUDIO
     // turn on DMA
     SysCtlPeripheralEnable(SYSCTL_PERIPH_UDMA);
     SysCtlPeripheralSleepEnable(SYSCTL_PERIPH_UDMA);
@@ -119,6 +122,7 @@ AudioOutput::AudioOutput()
     SSIIntRegister(SSI1_BASE, SSI1IntHandler);
     SSIIntEnable(SSI1_BASE, SSI_DMATX);
     IntEnable(INT_SSI1);
+
 #endif
 }
 
@@ -127,22 +131,17 @@ AudioMixer* AudioOutput::getAudioMixer()
     return &_audioMixer;
 }
 
-void AudioOutput::output(uint16_t voltage)
+void AudioOutput::playSampleAudio()
 {
-    _mcp4921->output(voltage);
-}
-
-void AudioOutput::test()
-{
-#ifdef TEST_AUDIO
+#if TEST_AUDIO
     uint16_t i = 0;
     while (true)
     {
         for (i = 0; i < SAMPLE_ELEMENTS; i++)
         {
-            output(__audioSamples[i]);
+            _mcp4921->output(__audioSamples[i]);
         }
-        Logger::getIntance().print(">");
+        Logger::getInstance().print(">");
     }
 #endif
 }

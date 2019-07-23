@@ -23,54 +23,53 @@
 void InitSystem()
 {
     // set clock at 80MHz, using MAIN XTAL 16MHz
-    ROM_SysCtlClockSet(SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_XTAL_16MHZ | SYSCTL_OSC_MAIN);
+    SysCtlClockSet(
+    SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_XTAL_16MHZ | SYSCTL_OSC_MAIN);
 
-#ifdef USE_SLEEP_MODE
+#if USE_SLEEP_MODE
     // Enable peripherals to operate when CPU is in sleep.
-    ROM_SysCtlPeripheralClockGating(true);
+    SysCtlPeripheralClockGating(true);
 #endif
 
-    // set SYSTICK to 30Hz for heart beat service
-    ROM_SysTickPeriodSet(SysCtlClockGet() / SYSTICKS_PER_SECOND);
+    // set SYSTICK
+    SysTickPeriodSet(SysCtlClockGet() / SYSTICKS_PER_SECOND);
     SysTickIntRegister(SysTickInterruptHandler);
-    ROM_SysTickIntEnable();
-    ROM_SysTickEnable();
-
-    // start CPU Usage
-    CpuUsage::getIntance().init();
+    SysTickIntEnable();
+    SysTickEnable();
 }
 
 void JumpToUsbUpdate()
 {
     // because we do not start with boot loader, therefore we have to setup USB port first
-    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD);
-    // wait for it
-    while (!ROM_SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOD))
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD);
+    while (!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOD))
     {
     }
 
     // setup USB pins: USB0PD, USB0PM
-    ROM_GPIOPinTypeUSBAnalog(GPIO_PORTD_BASE, GPIO_PIN_5 | GPIO_PIN_4);
+    GPIOPinTypeUSBAnalog(GPIO_PORTD_BASE, GPIO_PIN_5 | GPIO_PIN_4);
 
     // disable all interrupt
     ROM_IntMasterDisable();
-    ROM_SysTickIntDisable();
-    ROM_SysTickDisable();
+    SysTickIntDisable();
+    SysTickDisable();
 
     // force disable all interrupts via hw
     HWREG(NVIC_DIS0) = 0xffffffff;
     HWREG(NVIC_DIS1) = 0xffffffff;
 
-
-    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_USB0);
-    while (!ROM_SysCtlPeripheralReady(SYSCTL_PERIPH_UART0))
+    // enable USB0
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_USB0);
+    while (!SysCtlPeripheralReady(SYSCTL_PERIPH_UART0))
     {
     }
-    ROM_SysCtlPeripheralReset(SYSCTL_PERIPH_USB0);
+
+    // reset USB0 to default description
+    SysCtlPeripheralReset(SYSCTL_PERIPH_USB0);
 
     // USB must use PLL
-    ROM_SysCtlUSBPLLEnable();
-    ROM_SysCtlDelay(SysCtlClockGet() / 3);
+    SysCtlUSBPLLEnable();
+    SysCtlDelay(SysCtlClockGet() / 3);
 
     // interrupt for USB
     ROM_IntMasterEnable();
@@ -82,41 +81,43 @@ void JumpToUsbUpdate()
 void JumpToUpdateOnBootLoader()
 {
     // because we do not start with boot loader, therefore we have to setup USB port first
-    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD);
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD);
     // wait for it
-    while (!ROM_SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOD))
+    while (!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOD))
     {
     }
 
     // setup USB pins: USB0PD, USB0PM
-    ROM_GPIOPinTypeUSBAnalog(GPIO_PORTD_BASE, GPIO_PIN_5 | GPIO_PIN_4);
+    GPIOPinTypeUSBAnalog(GPIO_PORTD_BASE, GPIO_PIN_5 | GPIO_PIN_4);
 
     // disable all interrupt
     ROM_IntMasterDisable();
-    ROM_SysTickIntDisable();
-    ROM_SysTickDisable();
+    SysTickIntDisable();
+    SysTickDisable();
 
     // force disable all interrupts via hw
     HWREG(NVIC_DIS0) = 0xffffffff;
     HWREG(NVIC_DIS1) = 0xffffffff;
 
-
-    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_USB0);
-    while (!ROM_SysCtlPeripheralReady(SYSCTL_PERIPH_UART0))
+    // enable USB0
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_USB0);
+    while (!SysCtlPeripheralReady(SYSCTL_PERIPH_UART0))
     {
     }
-    ROM_SysCtlPeripheralReset(SYSCTL_PERIPH_USB0);
+
+    // reset USB0 to default description
+    SysCtlPeripheralReset(SYSCTL_PERIPH_USB0);
 
     // USB must use PLL
-    ROM_SysCtlUSBPLLEnable();
-    ROM_SysCtlDelay(SysCtlClockGet() / 3);
+    SysCtlUSBPLLEnable();
+    SysCtlDelay(SysCtlClockGet() / 3);
 
     // interrupt for USB
     ROM_IntMasterEnable();
 
     // Return control to the boot loader.  This is a call to the SVC
     // handler in the boot loader.
-    (*((void (*)(void))(*(uint32_t *)0x2c)))();
+    (*((void (*)(void)) (*(uint32_t *) 0x2c)))();
 }
 
 void DisableInterrupts()

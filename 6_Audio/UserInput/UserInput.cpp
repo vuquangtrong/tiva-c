@@ -9,8 +9,7 @@
 
 #include <stdint.h>
 #include "UserInput.h"
-#include "ButtonLeftHandler.h"
-#include "ButtonRightHandler.h"
+#include "Logger/Logger.h"
 
 UserInput::UserInput()
 {
@@ -18,19 +17,11 @@ UserInput::UserInput()
 
 void UserInput::checkInput()
 {
-    buttonLeftHandler.checkState();
-    buttonRightHandler.checkState();
+    _buttonLeft.checkState();
+    _buttonRight.checkState();
 }
 
-bool UserInput::isPressed(uint8_t btnId)
+bool UserInput::isAllButtonsPressed()
 {
-    switch (btnId)
-    {
-    case 0:
-        return buttonLeftHandler.getRawState();
-    case 1:
-        return buttonRightHandler.getRawState();
-    default:
-        return false;
-    }
+    return _buttonLeft.isPressed() && _buttonRight.isPressed();
 }

@@ -9,7 +9,5 @@
 
 enum WaveformType
 {
-    None,
-    Square,
-    Sawtooth
+    None, Square, Sawtooth, Sine
 };

@@ -14,23 +14,10 @@
 #include "driverlib/gpio.h"
 #include "driverlib/uart.h"
 #include "driverlib/sysctl.h"
-#include "BuildConfig.h"
 #include "Logger.h"
 
 Logger::Logger()
 {
-    initLogger();
-}
-
-void Logger::initLogger()
-{
-    static bool __isLoggerInitialized = false;
-
-    if (__isLoggerInitialized)
-    {
-        return;
-    }
-
     // UART0 is on port A, must enable port A
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
     while (!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOA))
@@ -48,7 +35,7 @@ void Logger::initLogger()
     {
     }
 
-    // enable the peripheral in sleep mode
+    // enable UART0 in sleep mode
     SysCtlPeripheralSleepEnable(SYSCTL_PERIPH_UART0);
     SysCtlPeripheralDeepSleepEnable(SYSCTL_PERIPH_UART0);
 
@@ -56,11 +43,7 @@ void Logger::initLogger()
     UARTConfigSetExpClk(
             UART0_BASE, SysCtlClockGet(), 115200,
             UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE);
-
-    // turn it on
     UARTEnable(UART0_BASE);
-
-    __isLoggerInitialized = true;
 }
 
 void Logger::print(const char *pcString)

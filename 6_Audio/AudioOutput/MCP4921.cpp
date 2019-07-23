@@ -12,22 +12,12 @@
 #include "driverlib/gpio.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/ssi.h"
+#include "BuildConfig.h"
 #include "MCP4921.h"
 
 MCP4921::MCP4921()
 {
     _isActive = true;
-    initMCP4921();
-}
-
-void MCP4921::initMCP4921()
-{
-    static bool __isMCP4921Initialized = false;
-
-    if (__isMCP4921Initialized)
-    {
-        return;
-    }
 
     // use SSI1 on port D
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD);
@@ -35,15 +25,29 @@ void MCP4921::initMCP4921()
     {
     }
 
+#if USE_SLEEP_MODE_AUDIO
+    // enable the peripheral in sleep mode
+    SysCtlPeripheralSleepEnable(SYSCTL_PERIPH_GPIOD);
+    SysCtlPeripheralDeepSleepEnable(SYSCTL_PERIPH_GPIOD);
+#else
+    SysCtlPeripheralSleepDisable(SYSCTL_PERIPH_GPIOD);
+    SysCtlPeripheralDeepSleepDisable(SYSCTL_PERIPH_GPIOD);
+#endif
+
     // enable SSI1
     SysCtlPeripheralEnable(SYSCTL_PERIPH_SSI1);
     while (!SysCtlPeripheralReady(SYSCTL_PERIPH_SSI1))
     {
     }
 
+#if USE_SLEEP_MODE_AUDIO
     // allow it run in sleep mode
     SysCtlPeripheralSleepEnable(SYSCTL_PERIPH_SSI1);
     SysCtlPeripheralDeepSleepEnable(SYSCTL_PERIPH_SSI1);
+#else
+    SysCtlPeripheralSleepDisable(SYSCTL_PERIPH_SSI1);
+    SysCtlPeripheralDeepSleepDisable(SYSCTL_PERIPH_SSI1);
+#endif
 
     // setup pins
     GPIOPinConfigure(GPIO_PD0_SSI1CLK);
@@ -58,8 +62,6 @@ void MCP4921::initMCP4921()
 
     // turn SSI1 on
     SSIEnable(SSI1_BASE);
-
-    __isMCP4921Initialized = true;
 }
 
 void MCP4921::output(uint16_t voltage)

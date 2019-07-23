@@ -13,13 +13,8 @@
 #include "BuildConfig.h"
 #include "System/SystemControl.h"
 #include "UserInput/UserInput.h"
+#include "Utils/CpuUsage.h"
 #include "Logger/Logger.h"
-
-/* README
- *
- * Set --heap_size to use dynamic memory allocation, currently it is set to 512 bytes
- *
- */
 
 void main()
 {
@@ -30,23 +25,24 @@ void main()
     InitSystem();
 
     // start to run
-    //Logger::getIntance().print("\033[2J"); // clear screen
-    Logger::getIntance().println("\n\rFwUpdate");
-    Logger::getIntance().print("HW: ");
-    Logger::getIntance().println(HW_VERSION);
-    Logger::getIntance().print("SW: ");
-    Logger::getIntance().println(SW_VERSION);
+    Logger::getInstance().print("\033[2J"); // clear screen
+    Logger::getInstance().println("\n\rFwUpdate");
+    Logger::getInstance().println(HW_VERSION);
+    Logger::getInstance().println(SW_VERSION);
 
     // if 2 buttons are pressed during startup, go to boot loader
-    if (UserInput::getIntance().isPressed(0)
-            && UserInput::getIntance().isPressed(0))
+    if (UserInput::getInstance().isAllButtonsPressed())
     {
-        Logger::getIntance().println("Enter Update Mode!");
+        Logger::getInstance().println("Enter Update Mode!");
         JumpToUsbUpdate();
     }
 
+    // start CPU Usage
+    CpuUsage::getInstance();
+
     // run main program by enable interruptions
     EnableInterrupts();
+
     while (true)
     {
         // put CPU to low power mode, and wait for an interruption

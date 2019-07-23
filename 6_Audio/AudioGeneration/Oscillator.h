@@ -21,21 +21,21 @@ public:
                               uint8_t totalOscillatorCount, uint8_t noteIndex,
                               uint32_t currentSample);
 
-    WaveformType GetWaveformType();
-    uint8_t GetLevel();
-    int8_t GetCent();
-    int8_t GetSemitone();
+    WaveformType getWaveformType();
+    uint8_t getLevel();
+    int8_t getCent();
+    int8_t getSemitone();
 
-    void SetWaveformType(WaveformType waveformType);
-    void SetLevel(uint8_t level);
-    void SetCent(int8_t cent);
-    void SetSemitone(int8_t semitone);
+    void setWaveformType(WaveformType waveformType);
+    void setLevel(uint8_t level);
+    void setCent(int8_t cent);
+    void setSemitone(int8_t semitone);
 
 private:
-    float GetSamplesPerCycle(uint8_t noteIndex);
+    float getSamplesPerCycle(uint8_t noteIndex);
 
-    WaveformType waveformType_;
-    uint8_t level_;
-    int8_t cent_;
-    int8_t semitone_;
+    WaveformType _waveformType;
+    uint8_t _level;
+    int8_t _cent;
+    int8_t _semitone;
 };

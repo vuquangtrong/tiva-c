@@ -23,28 +23,25 @@
 void InitSystem()
 {
     // set clock at 80MHz, using MAIN XTAL 16MHz
-    SysCtlClockSet(SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_XTAL_16MHZ | SYSCTL_OSC_MAIN);
+    SysCtlClockSet(
+    SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_XTAL_16MHZ | SYSCTL_OSC_MAIN);
 
-#ifdef USE_SLEEP_MODE
+#if USE_SLEEP_MODE
     // Enable peripherals to operate when CPU is in sleep.
     SysCtlPeripheralClockGating(true);
 #endif
 
-    // set SYSTICK to 30Hz for heart beat service
+    // set SYSTICK
     SysTickPeriodSet(SysCtlClockGet() / SYSTICKS_PER_SECOND);
     SysTickIntRegister(SysTickInterruptHandler);
     SysTickIntEnable();
     SysTickEnable();
-
-    // start CPU Usage
-    CpuUsage::getIntance().init();
 }
 
 void JumpToUsbUpdate()
 {
     // because we do not start with boot loader, therefore we have to setup USB port first
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD);
-    // wait for it
     while (!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOD))
     {
     }
@@ -61,11 +58,13 @@ void JumpToUsbUpdate()
     HWREG(NVIC_DIS0) = 0xffffffff;
     HWREG(NVIC_DIS1) = 0xffffffff;
 
-
+    // enable USB0
     SysCtlPeripheralEnable(SYSCTL_PERIPH_USB0);
     while (!SysCtlPeripheralReady(SYSCTL_PERIPH_UART0))
     {
     }
+
+    // reset USB0 to default description
     SysCtlPeripheralReset(SYSCTL_PERIPH_USB0);
 
     // USB must use PLL

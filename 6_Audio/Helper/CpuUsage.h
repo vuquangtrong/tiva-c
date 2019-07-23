@@ -15,10 +15,10 @@
 class CpuUsage
 {
 public:
-    static CpuUsage& getIntance()
+    static CpuUsage& getInstance()
     {
-        static CpuUsage __intance;
-        return __intance;
+        static CpuUsage __instance;
+        return __instance;
     }
 
     uint32_t getCurrentUsage();
@@ -27,7 +27,6 @@ private:
     uint32_t _cpu_cycle_per_tick;
 
     CpuUsage();
-    void initCpuUsage();
 };
 
 #endif /* UTILS_CPUUSAGE_H_ */

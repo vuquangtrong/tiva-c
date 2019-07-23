@@ -2,7 +2,7 @@ Tiva C TM4C123G LaunchPad FW Update via USB DFU
 ===============================================
 
 If you want to update your device firmware, you just need to do below steps:
-- hook an update request by checking a special case
+- hook an update request by checking a special case: 2 buttons are pressed and held at startup
 - disable all interrupts
 - setup USB port and PLL
 - call to `ROM_UpdateUSB()`

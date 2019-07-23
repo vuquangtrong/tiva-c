@@ -19,10 +19,10 @@
 class Logger
 {
 public:
-    static Logger& getIntance()
+    static Logger& getInstance()
     {
-        static Logger __intance;
-        return __intance;
+        static Logger __instance;
+        return __instance;
     }
 
     void print(const char *pcString);
@@ -30,11 +30,10 @@ public:
     void printf(const char *pcString, ...);
 
 private:
-    char g_pcHex[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a',
-                         'b', 'c', 'd', 'e', 'f' };
+    const char g_pcHex[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+                               'a', 'b', 'c', 'd', 'e', 'f' };
 
     Logger();
-    void initLogger();
     void vprintf(const char *pcString, va_list vaArgP);
     int write(const char *pcBuf, uint32_t ui32Len);
 };

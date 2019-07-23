@@ -46,7 +46,6 @@ public:
     {
     }
 
-private:
     char _label[Menu::MAX_CHARS_PER_ROW + 1];
 };
 

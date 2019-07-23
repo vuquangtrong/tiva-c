@@ -11,11 +11,7 @@
 #include "Menu/Menu.h"
 #include "Menu/MenuItem.h"
 #include "Helper/ustdlib.h"
-#if USE_LCD_NOKIA5110
-#include "Display/Nokia5110.h"
-#elif USE_OLED_SH1106
-#include "Display/SH1106.h"
-#endif
+#include "Display/Display.h"
 #include "Logger/Logger.h"
 
 MainMenu::MainMenu()
@@ -62,7 +58,7 @@ MainMenu::MainMenu()
     _menuItem_setting_brightness.setParentMenu(&_root);
     _menuItem_setting_brightness.setProperty(&_switch_setting_brightness);
     _switch_setting_brightness.setText("Brightness");
-    _switch_setting_brightness.setNumber(0x7f, 0xff, 0x00);
+    _switch_setting_brightness.setNumber(0, 125, 0);
 #endif
 
     _menuItem_about_hw_ver.setParentMenu(&_root);
@@ -71,7 +67,7 @@ MainMenu::MainMenu()
 
     _menuItem_about_sw_ver.setParentMenu(&_root);
     _menuItem_about_sw_ver.setProperty(&_label_about_sw_ver);
-    _label_about_sw_ver.setText(SW_VERSION);
+    _label_about_sw_ver.setText("SW: 0.55 - LcdMenu");
 
     _currentMenu = &_root;
     _currentRow = 0;
@@ -99,11 +95,7 @@ void MainMenu::drawMenu()
                 y++;
             }
             line[Menu::MAX_CHARS_PER_ROW + 2] = 0;
-#if USE_LCD_NOKIA5110
-            Nokia5110::getIntance().print(0, i, line);
-#elif USE_OLED_SH1106
-            SH1106::getIntance().print(0, i, line);
-#endif
+            Display::getInstance().print(0, i, line);
         }
         _isChanged = false;
     }
@@ -111,7 +103,7 @@ void MainMenu::drawMenu()
 
 void MainMenu::hanldeAction(MainMenu::ACTIONS action)
 {
-    Logger::getIntance().printf("action=%d", action);
+    Logger::getInstance().printf("action=%d", action);
     switch (action)
     {
     case MainMenu::ACTION_UP:

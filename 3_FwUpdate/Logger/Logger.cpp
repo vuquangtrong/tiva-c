@@ -14,23 +14,10 @@
 #include "driverlib/gpio.h"
 #include "driverlib/uart.h"
 #include "driverlib/sysctl.h"
-#include "BuildConfig.h"
 #include "Logger.h"
 
 Logger::Logger()
 {
-    initLogger();
-}
-
-void Logger::initLogger()
-{
-    static bool __isLoggerInitialized = false;
-
-    if (__isLoggerInitialized)
-    {
-        return;
-    }
-
     // UART0 is on port A, must enable port A
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
     while (!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOA))
@@ -48,17 +35,15 @@ void Logger::initLogger()
     {
     }
 
-#ifdef USE_SLEEP_MODE
-    // enable the peripheral in sleep mode
+    // enable UART0 in sleep mode
     SysCtlPeripheralSleepEnable(SYSCTL_PERIPH_UART0);
     SysCtlPeripheralDeepSleepEnable(SYSCTL_PERIPH_UART0);
-#endif
 
     // setup UART0 clock, baud rate, data structure
-    UARTConfigSetExpClk(UART0_BASE, SysCtlClockGet(), 115200, UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE);
+    UARTConfigSetExpClk(
+            UART0_BASE, SysCtlClockGet(), 115200,
+            UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE);
     UARTEnable(UART0_BASE);
-
-    __isLoggerInitialized = true;
 }
 
 void Logger::print(const char *pcString)
@@ -131,7 +116,9 @@ void Logger::vprintf(const char *pcString, va_list vaArgP)
         //
         // Find the first non-% character, or the end of the string.
         //
-        for (ui32Idx = 0; (pcString[ui32Idx] != '%') && (pcString[ui32Idx] != '\0'); ui32Idx++)
+        for (ui32Idx = 0;
+                (pcString[ui32Idx] != '%') && (pcString[ui32Idx] != '\0');
+                ui32Idx++)
         {
         }
 
@@ -174,326 +161,330 @@ void Logger::vprintf(const char *pcString, va_list vaArgP)
             //
             switch (*pcString++)
             {
+            //
+            // Handle the digit characters.
+            //
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+            {
                 //
-                // Handle the digit characters.
+                // If this is a zero, and it is the first digit, then the
+                // fill character is a zero instead of a space.
                 //
-                case '0':
-                case '1':
-                case '2':
-                case '3':
-                case '4':
-                case '5':
-                case '6':
-                case '7':
-                case '8':
-                case '9':
+                if ((pcString[-1] == '0') && (ui32Count == 0))
                 {
-                    //
-                    // If this is a zero, and it is the first digit, then the
-                    // fill character is a zero instead of a space.
-                    //
-                    if ((pcString[-1] == '0') && (ui32Count == 0))
-                    {
-                        cFill = '0';
-                    }
-
-                    //
-                    // Update the digit count.
-                    //
-                    ui32Count *= 10;
-                    ui32Count += pcString[-1] - '0';
-
-                    //
-                    // Get the next character.
-                    //
-                    goto again;
+                    cFill = '0';
                 }
 
-                    //
-                    // Handle the %c command.
-                    //
-                case 'c':
+                //
+                // Update the digit count.
+                //
+                ui32Count *= 10;
+                ui32Count += pcString[-1] - '0';
+
+                //
+                // Get the next character.
+                //
+                goto again;
+            }
+
+                //
+                // Handle the %c command.
+                //
+            case 'c':
+            {
+                //
+                // Get the value from the varargs.
+                //
+                ui32Value = va_arg(vaArgP, uint32_t);
+
+                //
+                // Print out the character.
+                //
+                write((char *) &ui32Value, 1);
+
+                //
+                // This command has been handled.
+                //
+                break;
+            }
+
+                //
+                // Handle the %d and %i commands.
+                //
+            case 'd':
+            case 'i':
+            {
+                //
+                // Get the value from the varargs.
+                //
+                ui32Value = va_arg(vaArgP, uint32_t);
+
+                //
+                // Reset the buffer position.
+                //
+                ui32Pos = 0;
+
+                //
+                // If the value is negative, make it positive and indicate
+                // that a minus sign is needed.
+                //
+                if ((int32_t) ui32Value < 0)
                 {
                     //
-                    // Get the value from the varargs.
+                    // Make the value positive.
                     //
-                    ui32Value = va_arg(vaArgP, uint32_t);
+                    ui32Value = -(int32_t) ui32Value;
 
                     //
-                    // Print out the character.
+                    // Indicate that the value is negative.
                     //
-                    write((char *) &ui32Value, 1);
-
-                    //
-                    // This command has been handled.
-                    //
-                    break;
+                    ui32Neg = 1;
                 }
-
-                    //
-                    // Handle the %d and %i commands.
-                    //
-                case 'd':
-                case 'i':
+                else
                 {
                     //
-                    // Get the value from the varargs.
-                    //
-                    ui32Value = va_arg(vaArgP, uint32_t);
-
-                    //
-                    // Reset the buffer position.
-                    //
-                    ui32Pos = 0;
-
-                    //
-                    // If the value is negative, make it positive and indicate
-                    // that a minus sign is needed.
-                    //
-                    if ((int32_t) ui32Value < 0)
-                    {
-                        //
-                        // Make the value positive.
-                        //
-                        ui32Value = -(int32_t) ui32Value;
-
-                        //
-                        // Indicate that the value is negative.
-                        //
-                        ui32Neg = 1;
-                    }
-                    else
-                    {
-                        //
-                        // Indicate that the value is positive so that a minus
-                        // sign isn't inserted.
-                        //
-                        ui32Neg = 0;
-                    }
-
-                    //
-                    // Set the base to 10.
-                    //
-                    ui32Base = 10;
-
-                    //
-                    // Convert the value to ASCII.
-                    //
-                    goto convert;
-                }
-
-                    //
-                    // Handle the %s command.
-                    //
-                case 's':
-                {
-                    //
-                    // Get the string pointer from the varargs.
-                    //
-                    pcStr = va_arg(vaArgP, char *);
-
-                    //
-                    // Determine the length of the string.
-                    //
-                    for (ui32Idx = 0; pcStr[ui32Idx] != '\0'; ui32Idx++)
-                    {
-                    }
-
-                    //
-                    // Write the string.
-                    //
-                    write(pcStr, ui32Idx);
-
-                    //
-                    // Write any required padding spaces
-                    //
-                    if (ui32Count > ui32Idx)
-                    {
-                        ui32Count -= ui32Idx;
-                        while (ui32Count--)
-                        {
-                            write(" ", 1);
-                        }
-                    }
-
-                    //
-                    // This command has been handled.
-                    //
-                    break;
-                }
-
-                    //
-                    // Handle the %u command.
-                    //
-                case 'u':
-                {
-                    //
-                    // Get the value from the varargs.
-                    //
-                    ui32Value = va_arg(vaArgP, uint32_t);
-
-                    //
-                    // Reset the buffer position.
-                    //
-                    ui32Pos = 0;
-
-                    //
-                    // Set the base to 10.
-                    //
-                    ui32Base = 10;
-
-                    //
-                    // Indicate that the value is positive so that a minus sign
-                    // isn't inserted.
+                    // Indicate that the value is positive so that a minus
+                    // sign isn't inserted.
                     //
                     ui32Neg = 0;
-
-                    //
-                    // Convert the value to ASCII.
-                    //
-                    goto convert;
                 }
 
-                    //
-                    // Handle the %x and %X commands.  Note that they are treated
-                    // identically; in other words, %X will use lower case letters
-                    // for a-f instead of the upper case letters it should use.  We
-                    // also alias %p to %x.
-                    //
-                case 'x':
-                case 'X':
-                case 'p':
+                //
+                // Set the base to 10.
+                //
+                ui32Base = 10;
+
+                //
+                // Convert the value to ASCII.
+                //
+                goto convert;
+            }
+
+                //
+                // Handle the %s command.
+                //
+            case 's':
+            {
+                //
+                // Get the string pointer from the varargs.
+                //
+                pcStr = va_arg(vaArgP, char *);
+
+                //
+                // Determine the length of the string.
+                //
+                for (ui32Idx = 0; pcStr[ui32Idx] != '\0'; ui32Idx++)
+                {
+                }
+
+                //
+                // Write the string.
+                //
+                write(pcStr, ui32Idx);
+
+                //
+                // Write any required padding spaces
+                //
+                if (ui32Count > ui32Idx)
+                {
+                    ui32Count -= ui32Idx;
+                    while (ui32Count--)
+                    {
+                        write(" ", 1);
+                    }
+                }
+
+                //
+                // This command has been handled.
+                //
+                break;
+            }
+
+                //
+                // Handle the %u command.
+                //
+            case 'u':
+            {
+                //
+                // Get the value from the varargs.
+                //
+                ui32Value = va_arg(vaArgP, uint32_t);
+
+                //
+                // Reset the buffer position.
+                //
+                ui32Pos = 0;
+
+                //
+                // Set the base to 10.
+                //
+                ui32Base = 10;
+
+                //
+                // Indicate that the value is positive so that a minus sign
+                // isn't inserted.
+                //
+                ui32Neg = 0;
+
+                //
+                // Convert the value to ASCII.
+                //
+                goto convert;
+            }
+
+                //
+                // Handle the %x and %X commands.  Note that they are treated
+                // identically; in other words, %X will use lower case letters
+                // for a-f instead of the upper case letters it should use.  We
+                // also alias %p to %x.
+                //
+            case 'x':
+            case 'X':
+            case 'p':
+            {
+                //
+                // Get the value from the varargs.
+                //
+                ui32Value = va_arg(vaArgP, uint32_t);
+
+                //
+                // Reset the buffer position.
+                //
+                ui32Pos = 0;
+
+                //
+                // Set the base to 16.
+                //
+                ui32Base = 16;
+
+                //
+                // Indicate that the value is positive so that a minus sign
+                // isn't inserted.
+                //
+                ui32Neg = 0;
+
+                //
+                // Determine the number of digits in the string version of
+                // the value.
+                //
+                convert: for (ui32Idx = 1;
+                        (((ui32Idx * ui32Base) <= ui32Value)
+                                && (((ui32Idx * ui32Base) / ui32Base) == ui32Idx));
+                        ui32Idx *= ui32Base, ui32Count--)
+                {
+                }
+
+                //
+                // If the value is negative, reduce the count of padding
+                // characters needed.
+                //
+                if (ui32Neg)
+                {
+                    ui32Count--;
+                }
+
+                //
+                // If the value is negative and the value is padded with
+                // zeros, then place the minus sign before the padding.
+                //
+                if (ui32Neg && (cFill == '0'))
                 {
                     //
-                    // Get the value from the varargs.
+                    // Place the minus sign in the output buffer.
                     //
-                    ui32Value = va_arg(vaArgP, uint32_t);
+                    pcBuf[ui32Pos++] = '-';
 
                     //
-                    // Reset the buffer position.
-                    //
-                    ui32Pos = 0;
-
-                    //
-                    // Set the base to 16.
-                    //
-                    ui32Base = 16;
-
-                    //
-                    // Indicate that the value is positive so that a minus sign
-                    // isn't inserted.
+                    // The minus sign has been placed, so turn off the
+                    // negative flag.
                     //
                     ui32Neg = 0;
-
-                    //
-                    // Determine the number of digits in the string version of
-                    // the value.
-                    //
-                    convert: for (ui32Idx = 1; (((ui32Idx * ui32Base) <= ui32Value) && (((ui32Idx * ui32Base) / ui32Base) == ui32Idx)); ui32Idx *= ui32Base, ui32Count--)
-                    {
-                    }
-
-                    //
-                    // If the value is negative, reduce the count of padding
-                    // characters needed.
-                    //
-                    if (ui32Neg)
-                    {
-                        ui32Count--;
-                    }
-
-                    //
-                    // If the value is negative and the value is padded with
-                    // zeros, then place the minus sign before the padding.
-                    //
-                    if (ui32Neg && (cFill == '0'))
-                    {
-                        //
-                        // Place the minus sign in the output buffer.
-                        //
-                        pcBuf[ui32Pos++] = '-';
-
-                        //
-                        // The minus sign has been placed, so turn off the
-                        // negative flag.
-                        //
-                        ui32Neg = 0;
-                    }
-
-                    //
-                    // Provide additional padding at the beginning of the
-                    // string conversion if needed.
-                    //
-                    if ((ui32Count > 1) && (ui32Count < 16))
-                    {
-                        for (ui32Count--; ui32Count; ui32Count--)
-                        {
-                            pcBuf[ui32Pos++] = cFill;
-                        }
-                    }
-
-                    //
-                    // If the value is negative, then place the minus sign
-                    // before the number.
-                    //
-                    if (ui32Neg)
-                    {
-                        //
-                        // Place the minus sign in the output buffer.
-                        //
-                        pcBuf[ui32Pos++] = '-';
-                    }
-
-                    //
-                    // Convert the value into a string.
-                    //
-                    for (; ui32Idx; ui32Idx /= ui32Base)
-                    {
-                        pcBuf[ui32Pos++] = g_pcHex[(ui32Value / ui32Idx) % ui32Base];
-                    }
-
-                    //
-                    // Write the string.
-                    //
-                    write(pcBuf, ui32Pos);
-
-                    //
-                    // This command has been handled.
-                    //
-                    break;
                 }
 
-                    //
-                    // Handle the %% command.
-                    //
-                case '%':
+                //
+                // Provide additional padding at the beginning of the
+                // string conversion if needed.
+                //
+                if ((ui32Count > 1) && (ui32Count < 16))
+                {
+                    for (ui32Count--; ui32Count; ui32Count--)
+                    {
+                        pcBuf[ui32Pos++] = cFill;
+                    }
+                }
+
+                //
+                // If the value is negative, then place the minus sign
+                // before the number.
+                //
+                if (ui32Neg)
                 {
                     //
-                    // Simply write a single %.
+                    // Place the minus sign in the output buffer.
                     //
-                    write(pcString - 1, 1);
-
-                    //
-                    // This command has been handled.
-                    //
-                    break;
+                    pcBuf[ui32Pos++] = '-';
                 }
 
-                    //
-                    // Handle all other commands.
-                    //
-                default:
+                //
+                // Convert the value into a string.
+                //
+                for (; ui32Idx; ui32Idx /= ui32Base)
                 {
-                    //
-                    // Indicate an error.
-                    //
-                    write("ERROR", 5);
-
-                    //
-                    // This command has been handled.
-                    //
-                    break;
+                    pcBuf[ui32Pos++] =
+                            g_pcHex[(ui32Value / ui32Idx) % ui32Base];
                 }
+
+                //
+                // Write the string.
+                //
+                write(pcBuf, ui32Pos);
+
+                //
+                // This command has been handled.
+                //
+                break;
+            }
+
+                //
+                // Handle the %% command.
+                //
+            case '%':
+            {
+                //
+                // Simply write a single %.
+                //
+                write(pcString - 1, 1);
+
+                //
+                // This command has been handled.
+                //
+                break;
+            }
+
+                //
+                // Handle all other commands.
+                //
+            default:
+            {
+                //
+                // Indicate an error.
+                //
+                write("ERROR", 5);
+
+                //
+                // This command has been handled.
+                //
+                break;
+            }
             }
         }
     }

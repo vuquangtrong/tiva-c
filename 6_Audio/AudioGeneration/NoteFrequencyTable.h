@@ -9,5 +9,5 @@
 
 #include <stdint.h>
 
-void InitializeNoteFrequencyTable();
-float GetFrequency(uint8_t noteIndex);
+void initializeNoteFrequencyTable();
+float getFrequency(uint8_t noteIndex);

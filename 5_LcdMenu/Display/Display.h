@@ -11,12 +11,27 @@
 #pragma once
 
 #include <stdint.h>
+#include "BuildConfig.h"
+#include "DisplayInterface.h"
 
 class Display
 {
 public:
-    virtual void print(uint8_t col, uint8_t row, const char *msg) = 0;
-    virtual void clear() = 0;
+    static Display& getInstance()
+    {
+        static Display __instance;
+        return __instance;
+    }
+
+    void print(uint8_t col, uint8_t row, const char *msg);
+    void clear();
+    void setBacklight(bool state);
+    void setBrightness(uint8_t val);
+
+private:
+    Display();
+    DisplayInterface* _display;
+
 };
 
 #endif /* DISPLAY_DISPLAY_H_ */

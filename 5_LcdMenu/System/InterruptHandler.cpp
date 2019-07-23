@@ -22,11 +22,11 @@ void SysTickInterruptHandler()
     if(__tick_count == SYSTICKS_PER_SECOND)
     {
         __tick_count = 0;
-        LedIndicator::getIntance().outputHeartBeatSignal();
-        Logger::getIntance().printf("%3d%%\n\r", CpuUsage::getIntance().getCurrentUsage());
+        LedIndicator::getInstance().outputHeartBeatSignal();
+        Logger::getInstance().printf("%3d%%\n\r", CpuUsage::getInstance().getCurrentUsage());
     }
 
-    UserInput::getIntance().checkInput();
+    UserInput::getInstance().checkInput();
     MainMenu::getIntance().drawMenu();
 
 }

@@ -1,14 +1,14 @@
 Tiva C TM4C123G LaunchPad Bringup
 =================================
 
-This bringup project shows you how to start the board as **pre-RTOS** in **C++**
+This bringup project shows you how to start the board an **C++** project
 
 **Feature**
 
 - _SystemControl_ sets up the system clock and _SysTick_ interrupt which acts as your system heartbeat
-- _InterruptHandler_ provides interruption handler
-- _LedIndicator_ blinks the on-board LED 
-- _Logger_ configs the UART0 port which connects to PC via virtual COM port, and provides _printf_ function
+- _InterruptHandler_ provides interruption handlers
+- _LedIndicator_ blinks an on-board LED to signal heartbeat
+- _Logger_ configs the UART0 port which connects to PC via virtual COM port, and provides _printf()_ function
 - _Button_ detects _click_, _doubleClick_, _hold_, _release_ events of an input button
 - _UserInput_ shows you how to add and handle on-board SW events
 

@@ -15,27 +15,25 @@ class Oscillator;
 class AudioMixer
 {
 public:
+    enum Settings
+    {
+        NO_MIDI_NOTE = 0, MIDI_NOTE_COUNT = 128
+    };
+
     AudioMixer();
-
-    Oscillator& GetOscillator1();
-    Oscillator& GetOscillator2();
-    Oscillator& GetOscillator3();
-
-    void SetMIDINote(uint8_t midiNoteIndex);
-    void GetAudioData(uint16_t buffer[], uint32_t bufferSampleSize);
+    Oscillator& getOscillator1();
+    Oscillator& getOscillator2();
+    Oscillator& getOscillator3();
+    void setMIDINote(uint8_t midiNoteIndex);
+    void getAudioData(uint16_t buffer[], uint32_t bufferSampleSize);
 
 private:
-    void SetupDefaultOscillatorValues();
-    uint8_t GetActiveOscillatorCount();
+    Oscillator _oscillator1;
+    Oscillator _oscillator2;
+    Oscillator _oscillator3;
+    uint32_t _sampleCount;
+    uint8_t _midiNoteIndex;
 
-    Oscillator oscillator1_;
-    Oscillator oscillator2_;
-    Oscillator oscillator3_;
-
-    uint8_t midiNoteIndex_;
-    static const uint8_t MIDI_NOTE_COUNT_ = 128;
-    static const uint8_t NO_MIDI_NOTE_ = 0;
-    //float noteFrequencyTable_[MIDI_NOTE_COUNT_];
-
-    uint32_t sampleCount_;
+    void setupDefaultOscillatorValues();
+    uint8_t getActiveOscillatorCount();
 };

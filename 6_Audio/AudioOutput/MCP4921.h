@@ -18,13 +18,17 @@ class MCP4921
 public:
 
     /*
-     * Vdd = Vbus
-     * Vss = GND
-     * Vref = 3.3 : max Vout = 3.3*G
-     * ~LDAC = GND: push data on CS=High every bit
+     * PIN_1 = VDD, set to 3.3V
+     * PIN_2 = CS
+     * PIN_3 = SCK
+     * PIN_4 = SDI
+     * PIN_5 = LDAC, set to GND to push data on every CS=HIGH
+     * PIN_6 = VREF, set to 3.3V, max Vout = 3.3*G
+     * PIN_7 = VSS, set to GND
+     * PIN_8 = VOUT
      */
 
-    enum SETTINGS
+    enum Settings
     {
         DAC_RESOLUTION = 12,
         PIN_DIN = GPIO_PIN_3,
@@ -34,10 +38,10 @@ public:
         SHUTDOWN = 0x6000 /* BUF = 1, ~G=1, ~SHUTDOWN=0 */
     };
 
-    static MCP4921& getIntance()
+    static MCP4921& getInstance()
     {
-        static MCP4921 __intance;
-        return __intance;
+        static MCP4921 __instance;
+        return __instance;
     }
 
     void output(uint16_t voltage);
@@ -46,9 +50,8 @@ public:
 
 private:
     bool _isActive;
-    MCP4921();
-    void initMCP4921();
 
+    MCP4921();
 };
 
 #endif /* AUDIOOUTPUT_MCP4921_H_ */

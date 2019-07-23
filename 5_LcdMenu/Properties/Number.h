@@ -67,7 +67,6 @@ public:
         }
     }
 
-private:
     char _text[Menu::MAX_CHARS_PER_ROW + 1];
     int16_t _number;
     int16_t _max;

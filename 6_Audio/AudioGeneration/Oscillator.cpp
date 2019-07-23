@@ -5,61 +5,61 @@
  *      Author: vqtrong
  */
 
+#include <math.h>
 #include "AudioGeneration/Oscillator.h"
 #include "AudioGeneration/NoteFrequencyTable.h"
-#include <math.h>
 
 // The default constructor just sets up default values for the oscillator
 Oscillator::Oscillator() :
-        waveformType_(Sawtooth), level_(10), cent_(0), semitone_(0)
+        _waveformType(Sawtooth), _level(10), _cent(0), _semitone(0)
 {
 }
 
 Oscillator::Oscillator(enum WaveformType waveformType, uint8_t level,
                        int8_t cent, int8_t semitone) :
-        waveformType_(waveformType), level_(level), cent_(cent), semitone_(
+        _waveformType(waveformType), _level(level), _cent(cent), _semitone(
                 semitone)
 {
 }
 
-WaveformType Oscillator::GetWaveformType()
+WaveformType Oscillator::getWaveformType()
 {
-    return waveformType_;
+    return _waveformType;
 }
 
-uint8_t Oscillator::GetLevel()
+uint8_t Oscillator::getLevel()
 {
-    return level_;
+    return _level;
 }
 
-int8_t Oscillator::GetCent()
+int8_t Oscillator::getCent()
 {
-    return cent_;
+    return _cent;
 }
 
-int8_t Oscillator::GetSemitone()
+int8_t Oscillator::getSemitone()
 {
-    return semitone_;
+    return _semitone;
 }
 
-void Oscillator::SetWaveformType(WaveformType waveformType)
+void Oscillator::setWaveformType(WaveformType waveformType)
 {
-    waveformType_ = waveformType;
+    _waveformType = waveformType;
 }
 
-void Oscillator::SetLevel(uint8_t level)
+void Oscillator::setLevel(uint8_t level)
 {
-    level_ = level;
+    _level = level;
 }
 
-void Oscillator::SetCent(int8_t cent)
+void Oscillator::setCent(int8_t cent)
 {
-    cent_ = cent;
+    _cent = cent;
 }
 
-void Oscillator::SetSemitone(int8_t semitone)
+void Oscillator::setSemitone(int8_t semitone)
 {
-    semitone_ = semitone;
+    _semitone = semitone;
 }
 
 void Oscillator::MixInOscillatorAudio(uint16_t buffer[],
@@ -72,55 +72,63 @@ void Oscillator::MixInOscillatorAudio(uint16_t buffer[],
     float peakLevel;
     volatile uint32_t i = 0;
 
-    if (waveformType_ == None)
+    if (_waveformType == None)
     {
         return;
     }
 
-    // 12-bit DAC
-    peakLevel = 0x0FFF * ((float) level_ / 10.0f)
+    // 12-bit DAC, max value = 0x0FFF
+    peakLevel = 0x0FFF * ((float) _level / 10.0f)
             / (float) totalOscillatorCount;
-    samplesForOneCycle = GetSamplesPerCycle(noteIndex);
+    samplesForOneCycle = getSamplesPerCycle(noteIndex);
 
     for (i = 0; i < bufferSampleSize; ++i)
     {
         cyclePercent = fmodf(static_cast<float>(currentSample + i),
                              samplesForOneCycle) / samplesForOneCycle;
 
-        if (waveformType_ == Square && cyclePercent > 0.5)
+        if (_waveformType == Square && cyclePercent > 0.5)
         {
             buffer[i] += static_cast<uint16_t>(peakLevel);
         }
-        else if (waveformType_ == Sawtooth)
+        else if (_waveformType == Sawtooth)
         {
             buffer[i] += static_cast<uint16_t>(peakLevel * cyclePercent);
+        }
+        else if (_waveformType == Sine)
+        {
+            buffer[i] += static_cast<uint16_t>(peakLevel * 0.5f
+                    * (1 + sin(cyclePercent * 6.28f))); /* 2*pi = 6.28 */
         }
     }
 }
 
-float Oscillator::GetSamplesPerCycle(uint8_t noteIndex)
+float Oscillator::getSamplesPerCycle(uint8_t noteIndex)
 {
     float frequency;
-    float centAdjustment = static_cast<float>(cent_ / 100.0);
+    float centAdjustment = static_cast<float>(_cent / 100.0);
 
     if (noteIndex == 0)
     {
         return 0.0;
     }
 
-    uint8_t newNoteIndex = noteIndex + semitone_;
-    frequency = GetFrequency(newNoteIndex);
+    uint8_t newNoteIndex = noteIndex + _semitone;
+    frequency = getFrequency(newNoteIndex);
     if (centAdjustment > 0.001)
     {
-        frequency += (GetFrequency(newNoteIndex + 1)
-                - GetFrequency(newNoteIndex)) * centAdjustment;
+        frequency += (getFrequency(newNoteIndex + 1)
+                - getFrequency(newNoteIndex)) * centAdjustment;
     }
     else if (centAdjustment < -0.001)
     {
-        frequency += (GetFrequency(newNoteIndex)
-                - GetFrequency(newNoteIndex - 1)) * centAdjustment;
+        frequency += (getFrequency(newNoteIndex)
+                - getFrequency(newNoteIndex - 1)) * centAdjustment;
     }
 
-    return 44100.0f / frequency;
+    /* we should use 2 * 44100, but our system has some delay, we have to use a oscilloscope to tune the frequency
+     * 1.85f * 44100.0f / frequency
+     */
+    return 81585.0f / frequency;
 }
 

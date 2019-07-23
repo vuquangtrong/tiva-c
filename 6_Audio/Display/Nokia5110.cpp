@@ -18,27 +18,20 @@
 
 Nokia5110::Nokia5110()
 {
-    initNokia5110();
-}
-
-void Nokia5110::initNokia5110()
-{
-    static bool __isNokia5110Initialized = false;
-
-    if (__isNokia5110Initialized)
-    {
-        return;
-    }
-
     // we use SSI0 on port A
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
     while (!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOA))
     {
     }
 
+#if USE_SLEEP_MODE_DISPLAY
     // enable the peripheral in sleep mode
     SysCtlPeripheralSleepEnable(SYSCTL_PERIPH_GPIOA);
     SysCtlPeripheralDeepSleepEnable(SYSCTL_PERIPH_GPIOA);
+#else
+    SysCtlPeripheralSleepDisable(SYSCTL_PERIPH_GPIOA);
+    SysCtlPeripheralDeepSleepDisable(SYSCTL_PERIPH_GPIOA);
+#endif
 
     // we change the pin's purpose
     GPIOPinConfigure(GPIO_PA2_SSI0CLK);
@@ -55,15 +48,20 @@ void Nokia5110::initNokia5110()
     {
     }
 
+#if USE_SLEEP_MODE_DISPLAY
     // enable the peripheral in sleep mode
     SysCtlPeripheralSleepEnable(SYSCTL_PERIPH_SSI0);
     SysCtlPeripheralDeepSleepEnable(SYSCTL_PERIPH_SSI0);
+#else
+    SysCtlPeripheralSleepDisable(SYSCTL_PERIPH_SSI0);
+    SysCtlPeripheralDeepSleepDisable(SYSCTL_PERIPH_SSI0);
+#endif
 
     SSIDisable(SSI0_BASE);
     SSIClockSourceSet(SSI0_BASE, SSI_CLOCK_SYSTEM);
     SSIConfigSetExpClk(SSI0_BASE, SysCtlClockGet(),
-    SSI_FRF_MOTO_MODE_0,
-                       SSI_MODE_MASTER, 4000000, 8); // Max 4Mbps
+    SSI_CR0_FRF_MOTO,
+                       SSI_MODE_MASTER, 4000000, 8);
     SSIEnable(SSI0_BASE);
 
     SysCtlDelay(80000);
@@ -85,8 +83,6 @@ void Nokia5110::initNokia5110()
     command(COMMAND, DISPLAY_MODE); // normal display, not inverse
 
     clear();
-
-    __isNokia5110Initialized = true;
 }
 
 void Nokia5110::command(uint8_t type, uint8_t data)
@@ -165,9 +161,9 @@ void Nokia5110::clear()
     }
 }
 
-void Nokia5110::setBacklight(bool state)
+void Nokia5110::setBacklight(bool on)
 {
-    if (state)
+    if (on)
     {
         GPIOPinWrite(GPIO_PORTA_BASE, PIN_BL, 0);
     }
@@ -175,4 +171,9 @@ void Nokia5110::setBacklight(bool state)
     {
         GPIOPinWrite(GPIO_PORTA_BASE, PIN_BL, PIN_BL);
     }
+}
+
+void Nokia5110::setBrightness(uint8_t val)
+{
+
 }

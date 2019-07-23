@@ -13,11 +13,10 @@
 #include "BuildConfig.h"
 #include "System/SystemControl.h"
 #include "UserInput/UserInput.h"
+#include "Utils/CpuUsage.h"
 #include "Logger/Logger.h"
 
 /* README
- *
- * Set --heap_size to use dynamic memory allocation, currently it is set to 512 bytes
  *
  * THIS APPLICATION IS WORK WITH FLASH-BASED BOOTLOADER
  * Modified points:
@@ -25,7 +24,9 @@
  *      add APP_BASE and RAM_BASE, re-config flash, .intvers
  * TEST:
  * - flash BOOT LOADER first
- * - flash APPLCATION later using LM Flash Programmer only, don't use CCS flasher
+ * - flash APPLCATION later using LM Flash Programmer only, don't use CCS flasher, start address is 0x2800
+ * - press and hold 2 buttons, press reset to enter bootloader
+ * - in device list, you will see Stellaris DFU device with the name Vu Quang Trong
  */
 
 void main()
@@ -37,23 +38,24 @@ void main()
     InitSystem();
 
     // start to run
-    //Logger::getIntance().print("\033[2J"); // clear screen
-    Logger::getIntance().println("\n\rBootLoader");
-    Logger::getIntance().print("HW: ");
-    Logger::getIntance().println(HW_VERSION);
-    Logger::getIntance().print("SW: ");
-    Logger::getIntance().println(SW_VERSION);
+    Logger::getInstance().print("\033[2J"); // clear screen
+    Logger::getInstance().println("\n\rBootLoader");
+    Logger::getInstance().println(HW_VERSION);
+    Logger::getInstance().println(SW_VERSION);
 
     // if 2 buttons are pressed during startup, go to boot loader
-    if (UserInput::getIntance().isPressed(0)
-            && UserInput::getIntance().isPressed(0))
+    if (UserInput::getInstance().isAllButtonsPressed())
     {
-        Logger::getIntance().println("Enter Boot Loader!");
+        Logger::getInstance().println("Enter Update Mode!");
         JumpToUpdateOnBootLoader();
     }
 
+    // start CPU Usage
+    CpuUsage::getInstance();
+
     // run main program by enable interruptions
     EnableInterrupts();
+
     while (true)
     {
         // put CPU to low power mode, and wait for an interruption

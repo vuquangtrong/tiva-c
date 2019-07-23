@@ -1,11 +1,16 @@
 Tiva C TM4C123G LaunchPad Audio and DMA
 =======================================
 
-This project shows you how to use uDMA and DAC to make sound
-- MCP4921 is connected to SSI1 on TM4C123, running at 44.1kHz x 16b
+This project shows you how to use `uDMA` and `DAC` to make sound
+- `MCP4921` is connected to SSI1 on TM4C123, running at 44.1kHz x 12b
 - uDMA transfer data from audio buffer to SSI1, in ping-pong mode
-- You can play a piece of audio, please see AUDIO_TEST
-- You can generate wave sound with Audio Generator
+- You can play a piece of audio, please check AUDIO_TEST definition
+- You can generate wave sound with `Audio Generator`
+
+![sine.png](./sine.png)
+![square.png](./square.png)
+![sawtooth.png](./sawtooth.png)
+![sine_wave.jpg](./sine_wave.jpg)
 
 **Hardware**
 

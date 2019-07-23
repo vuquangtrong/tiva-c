@@ -16,30 +16,15 @@
 
 LedIndicator::LedIndicator()
 {
-    initLedIndicator();
-}
-
-void LedIndicator::initLedIndicator()
-{
-    static bool __isLedIndicatorInitialized = false;
-
-    if (__isLedIndicatorInitialized)
-    {
-        return;
-    }
-
     // LED of port F, we must enable port F
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
-
-    // wait for it
     while (!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOF))
     {
     }
 
     // set output direction on LEDs' pins
-    GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3);
-
-    __isLedIndicatorInitialized = true;
+    GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE,
+    GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3);
 }
 
 void LedIndicator::outputHeartBeatSignal()

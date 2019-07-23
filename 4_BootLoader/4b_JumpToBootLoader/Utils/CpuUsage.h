@@ -15,13 +15,12 @@
 class CpuUsage
 {
 public:
-    static CpuUsage& getIntance()
+    static CpuUsage& getInstance()
     {
-        static CpuUsage __intance;
-        return __intance;
+        static CpuUsage __instance;
+        return __instance;
     }
 
-    void init();
     uint32_t getCurrentUsage();
 
 private:

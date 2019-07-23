@@ -12,17 +12,12 @@
 #include "driverlib/timer.h"
 #include "BuildConfig.h"
 #include "CpuUsage.h"
-#include "Logger/Logger.h"
 
 CpuUsage::CpuUsage()
 {
-    initCpuUsage();
-}
-
-void CpuUsage::initCpuUsage()
-{
     _cpu_cycle_per_tick = SysCtlClockGet() / SYSTICKS_PER_SECOND;
 
+    // SW of port F, we must enable port F
     SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER2);
     while (!SysCtlPeripheralReady(SYSCTL_PERIPH_TIMER2))
     {

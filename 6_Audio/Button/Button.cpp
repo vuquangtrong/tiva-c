@@ -12,7 +12,6 @@
 #include "driverlib/gpio.h"
 #include "driverlib/sysctl.h"
 #include "Button.h"
-#include "Logger/Logger.h"
 
 Button::Button()
 {
@@ -21,18 +20,19 @@ Button::Button()
     _state = StateIdle;
     _port = 0;
     _pin = 0;
-    _buttonHandler = 0;
-    _new = false;
     _lastTransition = 0;
 
     // calculate delay as a number of of SYSTICK
     _debounce_delay = (DEBOUNCE_DELAY * SYSTICKS_PER_SECOND) / 1000;
     _singleClick_delay = (SINGLECLICK_DELAY * SYSTICKS_PER_SECOND) / 1000;
     _longClick_delay = (LONGCLICK_DELAY * SYSTICKS_PER_SECOND) / 1000;
-    //Logger::getIntance().printf("Button detection settings: %d %d %d\n\r", _debounce_delay, _singleClick_delay, _longClick_delay);
 }
 
-bool Button::getRawState()
+Button::~Button()
+{
+}
+
+bool Button::isPressed()
 {
     if (_port == 0 || _pin == 0)
     {
@@ -40,11 +40,13 @@ bool Button::getRawState()
     }
     uint8_t value = GPIOPinRead(_port, _pin) & _pin;
     bool pressed = (_active_level == ACTIVE_HIGH ? (value > 0) : (value == 0));
+
     return pressed;
 }
 
 void Button::checkState()
 {
+    static bool _new = false;
     if (_port == 0 || _pin == 0)
     {
         return;
@@ -63,11 +65,6 @@ void Button::checkState()
     }
 
     _tick++;
-
-    // Only take the low word, works as long as update() is called
-    // at least every ~32s, and typical use-case is <50ms.
-    // Also note that wrapping during StateIdle doesn't really matter,
-    // as the time isn't used then.
     uint32_t diff = _tick - _lastTransition;
 
     State next = StateIdle;
@@ -121,37 +118,37 @@ void Button::checkState()
     // True when any kind of click is detected (single, double or long).
     // A Click is detected at the same time as a Double or Long click, but
     // earlier than a Single click.
-    if (_new && (_state == StatePressed || _state == StateDoubleClick))
-    {
-    }
+//    if (_new && (_state == StatePressed || _state == StateDoubleClick))
+//    {
+//    }
 
     // True when a Single click is detected
-    if (_new && _state == StateSingleClick && _buttonHandler != 0)
+    if (_new && _state == StateSingleClick)
     {
-        _buttonHandler->onClick();
+        onClick();
     }
 
     // True when a Double click is detected.
-    if (_new && _state == StateDoubleClick && _buttonHandler != 0)
+    if (_new && _state == StateDoubleClick)
     {
-        _buttonHandler->onDoubleClick();
+        onDoubleClick();
     }
 
     // True when a Long click is detected.
-    if (_new && _state == StateLongClick && _buttonHandler != 0)
+    if (_new && _state == StateLongClick)
     {
-        _buttonHandler->onHold();
+        onHold();
     }
 
     // True once the button is released after Click, Long click or Double click.
     // Note: there is no release event after a Single click, because that is a
     // 'synthetic' event that happens after a normal click.
-    if (_new && (_state == StateSingleClick /* StateClickUp */
-    || _state == StateOtherUp) && _buttonHandler != 0)
+    if (_new && (_state == StateSingleClick || _state == StateOtherUp))
     {
-        _buttonHandler->onRelease();
+        onRelease();
     }
 }
+
 Button::State Button::_checkIdle(bool pressed, uint32_t diff)
 {
     (void) diff;
@@ -258,13 +255,9 @@ Button::State Button::_checkOtherUp(bool pressed, uint32_t diff)
     return StateIdle;
 }
 
-void Button::setGPIO(uint32_t port, uint8_t pin)
+void Button::config(uint32_t port, uint8_t pin, uint8_t level)
 {
     _port = port;
     _pin = pin;
-}
-
-void Button::setButtonHandler(ButtonHandler *buttonHandler)
-{
-    _buttonHandler = buttonHandler;
+    _active_level = level;
 }

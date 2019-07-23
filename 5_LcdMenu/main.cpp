@@ -17,20 +17,26 @@
 #include "MainMenu/MainMenu.h"
 #include "Helper/CpuUsage.h"
 
-/* Resource and Pin map */
-/*
-                  +---------------+
-    btn_left  PF0-|               |-PA0 uart_rx
-    led_red   PF1-|               |-PA1 uart_tx
-    led_blue  PF2-|               |-PA2 lcd_clk oled_sck
-    led_green PF2-|               |-PA3 lcd_ce  oled_cs
-    btn_right PF4-|               |-PA4 lcd_bl
-                 -|               |-PA5 lcd_din oled_sda
-                 -|               |-PA6 lcd_dc  oled_dc
-                 -|               |-PA7 lcd_rst oled_rst
-    usb_pd    PD4-|               |-
-    usb_pm    PD5-|               |-
-                  +---------------+
+/* Resource and Pin map
+
+ |-PA0 uart0_rx
+ |-PA1 uart0_tx
+ |-PA2 lcd_clk  oled_sck
+ |-PA3 lcd_ce   oled_cs
+ |-PA4 lcd_bl
+ |-PA5 lcd_din  oled_sda
+ |-PA6 lcd_dc   oled_dc
+ |-PA7 lcd_rst  oled_rst
+
+ |-PF0 btn_left
+ |-PF1 led_red
+ |-PF2 led_blue
+ |-PF3 led_green
+ |-PF4 btn_right
+
+ |-PD4 usb0_pd
+ |-PD5 usb0_pm
+
  */
 
 void main()
@@ -42,26 +48,31 @@ void main()
     InitSystem();
 
     // start to run
-    //Logger::getIntance().print("\033[2J"); // clear screen
-    Logger::getIntance().println("\n\rLcdMenu");
-    Logger::getIntance().print("HW: ");
-    Logger::getIntance().println(HW_VERSION);
-    Logger::getIntance().print("SW: ");
-    Logger::getIntance().println(SW_VERSION);
+    Logger::getInstance().print("\033[2J"); // clear screen
+#if USE_OLED_SH1106
+    Logger::getInstance().println("\n\rMenu on OLED SH1106");
+#elif USE_LCD_NOKIA5110
+    Logger::getInstance().println("\n\rMenu on LCD NOKIA5110");
+#else
+    Logger::getInstance().println("\n\rNo Display is configured! Exit!");
+    return;
+#endif
+    Logger::getInstance().println(HW_VERSION);
+    Logger::getInstance().println(SW_VERSION);
 
     // if 2 buttons are pressed during startup, go to boot loader
-    if (UserInput::getIntance().isPressed(0)
-            && UserInput::getIntance().isPressed(1))
+    if (UserInput::getInstance().isAllButtonsPressed())
     {
-        Logger::getIntance().println("Enter Update Mode!");
+        Logger::getInstance().println("Enter Update Mode!");
         JumpToUsbUpdate();
     }
 
     // start CPU Usage
-    CpuUsage::getIntance().init();
+    CpuUsage::getInstance();
 
     // run main program by enable interruptions
     EnableInterrupts();
+
     while (true)
     {
         // put CPU to low power mode, and wait for an interruption

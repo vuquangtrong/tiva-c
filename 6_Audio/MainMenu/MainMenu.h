@@ -16,6 +16,7 @@
 #include "Properties/Label.h"
 #include "Properties/Number.h"
 #include "Properties/Switch.h"
+#include "Properties/SH1106Brightness.h"
 #include "MainMenu.h"
 
 class MainMenu
@@ -65,6 +66,9 @@ private:
 
     MenuItem _menuItem_setting_backlight;
     Switch _switch_setting_backlight;
+
+    MenuItem _menuItem_setting_brightness;
+    SH1106Brightness _switch_setting_brightness;
 
     MenuItem _menuItem_about_hw_ver;
     Label _label_about_hw_ver;

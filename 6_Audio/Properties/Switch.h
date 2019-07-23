@@ -50,17 +50,16 @@ public:
     void valueUp()
     {
         _checked = !_checked;
-        Nokia5110::getIntance().setBacklight(_checked);
+        Nokia5110::getInstance().setBacklight(_checked);
 
     }
 
     void valueDown()
     {
         _checked = !_checked;
-        Nokia5110::getIntance().setBacklight(_checked);
+        Nokia5110::getInstance().setBacklight(_checked);
     }
 
-private:
     char _text[Menu::MAX_CHARS_PER_ROW + 1];
     bool _checked;
 };

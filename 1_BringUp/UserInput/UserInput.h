@@ -14,27 +14,25 @@
 
 #include <stdint.h>
 #include "Button/Button.h"
-#include "Button/ButtonHandler.h"
-#include "Logger/Logger.h"
-
-#define BUTTONS_MAX 2
+#include "ButtonLeft.h"
+#include "ButtonRight.h"
 
 class UserInput
 {
-    public:
-        static UserInput& getIntance()
-        {
-            static UserInput __intance;
-            return __intance;
-        }
+public:
+    static UserInput& getInstance()
+    {
+        static UserInput __instance;
+        return __instance;
+    }
 
-        void checkInput();
+    void checkInput();
 
-    private:
-        ButtonHandler* _buttons[BUTTONS_MAX]; // must use array of pointer, otherwise you see error: array of abstract class is not allowed
+private:
+    ButtonLeft _buttonLeft;
+    ButtonRight _buttonRight;
 
-        UserInput();
-        void initUserInput();
+    UserInput();
 };
 
 #endif /* USERINPUT_USERINPUT_H_ */

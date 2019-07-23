@@ -10,13 +10,8 @@
 #include <stdint.h>
 #include "BuildConfig.h"
 #include "System/SystemControl.h"
+#include "Utils/CpuUsage.h"
 #include "Logger/Logger.h"
-
-/* README
- *
- * Set --heap_size to use dynamic memory allocation, currently it is set to 512 bytes
- *
- */
 
 void main()
 {
@@ -27,16 +22,19 @@ void main()
     InitSystem();
 
     // start to run
-    //Logger::getIntance().print("\033[2J"); // clear screen
-#ifdef USE_SLEEP_MODE
-    Logger::getIntance().println("\n\rSleep Mode - ON");
+    Logger::getInstance().print("\033[2J"); // clear screen
+#if USE_SLEEP_MODE
+    Logger::getInstance().println("\n\rSleep Mode: ON");
 #else
-    Logger::getIntance().println("\n\rSleep Mode - Off");
+    Logger::getInstance().println("\n\rSleep Mode: Off");
 #endif
-    Logger::getIntance().print("HW: ");
-    Logger::getIntance().println(HW_VERSION);
-    Logger::getIntance().print("SW: ");
-    Logger::getIntance().println(SW_VERSION);
+    Logger::getInstance().println(HW_VERSION);
+    Logger::getInstance().println(SW_VERSION);
+
+    // start CPU Usage
+    CpuUsage::getInstance();
+
+    // run main program by enable interruptions
     EnableInterrupts();
 
     while (true)

@@ -7,7 +7,7 @@ In the [*BringUp*](../1_BringUp) project, main loop calls `WaitForInterrupt();` 
 Does it actually do what you want?
 
 This project includes `CpuUsage` module to monitor the number of clock cycles in which CPU actually does something.
-Between _SYSTICK_ cycle, CPU only uses some of its clock cycle to to.
+Between _SYSTICK_ cycle, CPU only uses some of its clock cycle to do its jobs.
 _TIMER2_ will only count those clock cycle when CPU is working.
 
 **Measurement**

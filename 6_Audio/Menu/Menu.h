@@ -16,7 +16,7 @@
 class Menu
 {
 public:
-    enum SETTINGS
+    enum Settings
     {
         MAX_ROWS = 6, MAX_CHARS_PER_ROW = 14
     };

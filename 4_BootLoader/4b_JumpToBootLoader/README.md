@@ -2,7 +2,7 @@ Tiva C TM4C123G LaunchPad Jump to Boot Loader
 =============================================
 
 If you want to go to Boot Loader, you just need to do below steps:
-- hook an update request by checking a special case
+- hook an update request by checking a special case: 2 buttons are pressed and held at startup
 - disable all interrupts
 - setup USB port and PLL
 - call `JumpToUpdateOnBootLoader()`
@@ -13,7 +13,9 @@ THIS APPLICATION IS WORK WITH FLASH-BASED BOOTLOADER
 Require modified points:
 - in tm4c123gh6pm.cmd: add APP_BASE and RAM_BASE, re-config flash, .intvers
 - flash BOOT LOADER first
-- flash APPLCATION later using LM Flash Programmer only, don't use CCS flasher
+- flash APPLCATION later using LM Flash Programmer only, don't use CCS flasher, `start address is 0x2800`
+- press and hold 2 buttons, press reset to enter bootloader
+- in device list, you will see Stellaris DFU device with the name Vu Quang Trong
 
 **Hardware**
 

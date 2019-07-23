@@ -11,24 +11,26 @@
 #pragma once
 
 #include <stdint.h>
-#include "Nokia5110.h"
+#include "BuildConfig.h"
+#include "DisplayInterface.h"
 
 class Display
 {
 public:
-    static Display& getIntance()
+    static Display& getInstance()
     {
-        static Display __intance;
-        return __intance;
+        static Display __instance;
+        return __instance;
     }
 
     void print(uint8_t col, uint8_t row, const char *msg);
     void clear();
     void setBacklight(bool state);
+    void setBrightness(uint8_t val);
 
 private:
     Display();
-    Nokia5110* _nokia5110;
+    DisplayInterface* _display;
 
 };
 

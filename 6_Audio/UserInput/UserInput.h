@@ -14,26 +14,24 @@
 
 #include <stdint.h>
 #include "Button/Button.h"
-#include "ButtonLeftHandler.h"
-#include "ButtonRightHandler.h"
-
-#define BUTTONS_MAX 2
+#include "ButtonLeft.h"
+#include "ButtonRight.h"
 
 class UserInput
 {
 public:
-    static UserInput& getIntance()
+    static UserInput& getInstance()
     {
-        static UserInput __intance;
-        return __intance;
+        static UserInput __instance;
+        return __instance;
     }
 
     void checkInput();
-    bool isPressed(uint8_t btnId);
+    bool isAllButtonsPressed();
 
 private:
-    ButtonLeftHandler buttonLeftHandler;
-    ButtonRightHandler buttonRightHandler;
+    ButtonLeft _buttonLeft;
+    ButtonRight _buttonRight;
 
     UserInput();
 };

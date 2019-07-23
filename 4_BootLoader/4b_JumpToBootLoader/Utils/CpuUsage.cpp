@@ -12,14 +12,8 @@
 #include "driverlib/timer.h"
 #include "BuildConfig.h"
 #include "CpuUsage.h"
-#include "Logger/Logger.h"
 
 CpuUsage::CpuUsage()
-{
-
-}
-
-void CpuUsage::init()
 {
     _cpu_cycle_per_tick = SysCtlClockGet() / SYSTICKS_PER_SECOND;
 
@@ -32,7 +26,6 @@ void CpuUsage::init()
     // Enable the timer while the processor is in run mode, but disable
     // it in sleep mode.  It will therefore count system clocks when the
     // processor is running but not when it is sleeping.
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER2);
     SysCtlPeripheralSleepDisable(SYSCTL_PERIPH_TIMER2);
     SysCtlPeripheralDeepSleepDisable(SYSCTL_PERIPH_TIMER2);
 

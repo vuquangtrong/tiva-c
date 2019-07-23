@@ -69,12 +69,13 @@ ustrncpy(char * restrict s1, const char * restrict s2, size_t n)
     //
     // Check the arguments.
     //
-    ASSERT(s1);ASSERT(s2);
+    ASSERT(s1);
+    ASSERT(s2);
 
-//
-// Start at the beginning of the source string.
-//
-count = 0;
+    //
+    // Start at the beginning of the source string.
+    //
+    count = 0;
 
     //
     // Copy the source string until we run out of source characters or
@@ -164,12 +165,14 @@ uvsnprintf(char * restrict s, size_t n, const char * restrict format,
     //
     // Check the arguments.
     //
-    ASSERT(s);ASSERT(n);ASSERT(format);
+    ASSERT(s);
+    ASSERT(n);
+    ASSERT(format);
 
-//
-// Adjust buffer size limit to allow one space for null termination.
-//
-if(n)
+    //
+    // Adjust buffer size limit to allow one space for null termination.
+    //
+    if(n)
     {
         n--;
     }
@@ -296,11 +299,11 @@ again:
                     //
                     ulValue = va_arg(arg, unsigned long);
 
-//
-// Copy the character to the output buffer, if there is
-// room.  Update the buffer size remaining.
-//
-if(n != 0)
+                    //
+                    // Copy the character to the output buffer, if there is
+                    // room.  Update the buffer size remaining.
+                    //
+                    if(n != 0)
                     {
                         *s++ = (char)ulValue;
                         n--;
@@ -328,11 +331,11 @@ if(n != 0)
                     //
                     ulValue = va_arg(arg, unsigned long);
 
-//
-// If the value is negative, make it positive and indicate
-// that a minus sign is needed.
-//
-if((long)ulValue < 0)
+                    //
+                    // If the value is negative, make it positive and indicate
+                    // that a minus sign is needed.
+                    //
+                    if((long)ulValue < 0)
                     {
                         //
                         // Make the value positive.
@@ -374,10 +377,10 @@ if((long)ulValue < 0)
                     //
                     pcStr = va_arg(arg, char *);
 
-//
-// Determine the length of the string.
-//
-for(ulIdx = 0; pcStr[ulIdx] != '\0'; ulIdx++)
+                    //
+                    // Determine the length of the string.
+                    //
+                    for(ulIdx = 0; pcStr[ulIdx] != '\0'; ulIdx++)
                     {
                     }
 
@@ -451,10 +454,10 @@ for(ulIdx = 0; pcStr[ulIdx] != '\0'; ulIdx++)
                     //
                     ulValue = va_arg(arg, unsigned long);
 
-//
-// Set the base to 10.
-//
-ulBase = 10;
+                    //
+                    // Set the base to 10.
+                    //
+                    ulBase = 10;
 
                     //
                     // Indicate that the value is positive so that a minus sign
@@ -483,10 +486,10 @@ ulBase = 10;
                     //
                     ulValue = va_arg(arg, unsigned long);
 
-//
-// Set the base to 16.
-//
-ulBase = 16;
+                    //
+                    // Set the base to 16.
+                    //
+                    ulBase = 16;
 
                     //
                     // Indicate that the value is positive so that a minus sign
@@ -735,21 +738,21 @@ usprintf(char * restrict s, const char *format, ...)
     //
     va_start(arg, format);
 
-//
-// Call vsnprintf to perform the conversion.  Use a large number for the
-// buffer size.
-//
-ret = uvsnprintf(s, 0xffff, format, arg);
+    //
+    // Call vsnprintf to perform the conversion.  Use a large number for the
+    // buffer size.
+    //
+    ret = uvsnprintf(s, 0xffff, format, arg);
 
     //
     // End the varargs processing.
     //
     va_end(arg);
 
-//
-// Return the conversion count.
-//
-return(ret);
+    //
+    // Return the conversion count.
+    //
+    return(ret);
 }
 
 //*****************************************************************************
@@ -813,20 +816,20 @@ usnprintf(char * restrict s, size_t n, const char * restrict format, ...)
     //
     va_start(arg, format);
 
-//
-// Call vsnprintf to perform the conversion.
-//
-ret = uvsnprintf(s, n, format, arg);
+    //
+    // Call vsnprintf to perform the conversion.
+    //
+    ret = uvsnprintf(s, n, format, arg);
 
     //
     // End the varargs processing.
     //
     va_end(arg);
 
-//
-// Return the conversion count.
-//
-return(ret);
+    //
+    // Return the conversion count.
+    //
+    return(ret);
 }
 
 //*****************************************************************************
@@ -835,8 +838,10 @@ return(ret);
 // month of the year, in a non-leap year.
 //
 //*****************************************************************************
-static const time_t g_psDaysToMonth[12] = { 0, 31, 59, 90, 120, 151, 181, 212,
-                                            243, 273, 304, 334 };
+static const time_t g_psDaysToMonth[12] =
+{
+    0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334
+};
 
 //*****************************************************************************
 //
@@ -853,76 +858,77 @@ static const time_t g_psDaysToMonth[12] = { 0, 31, 59, 90, 120, 151, 181, 212,
 //! \return None.
 //
 //*****************************************************************************
-void ulocaltime(time_t timer, struct tm *tm)
+void
+ulocaltime(time_t timer, struct tm *tm)
 {
-time_t temp, months;
+    time_t temp, months;
 
-//
-// Extract the number of seconds, converting time to the number of minutes.
-//
-temp = timer / 60;
-tm->tm_sec = timer - (temp * 60);
-timer = temp;
+    //
+    // Extract the number of seconds, converting time to the number of minutes.
+    //
+    temp = timer / 60;
+    tm->tm_sec = timer - (temp * 60);
+    timer = temp;
 
-//
-// Extract the number of minutes, converting time to the number of hours.
-//
-temp = timer / 60;
-tm->tm_min = timer - (temp * 60);
-timer = temp;
+    //
+    // Extract the number of minutes, converting time to the number of hours.
+    //
+    temp = timer / 60;
+    tm->tm_min = timer - (temp * 60);
+    timer = temp;
 
-//
-// Extract the number of hours, converting time to the number of days.
-//
-temp = timer / 24;
-tm->tm_hour = timer - (temp * 24);
-timer = temp;
+    //
+    // Extract the number of hours, converting time to the number of days.
+    //
+    temp = timer / 24;
+    tm->tm_hour = timer - (temp * 24);
+    timer = temp;
 
-//
-// Compute the day of the week.
-//
-tm->tm_wday = (timer + 4) % 7;
+    //
+    // Compute the day of the week.
+    //
+    tm->tm_wday = (timer + 4) % 7;
 
-//
-// Compute the number of leap years that have occurred since 1968, the
-// first leap year before 1970.  For the beginning of a leap year, cut the
-// month loop below at March so that the leap day is classified as February
-// 29 followed by March 1, instead of March 1 followed by another March 1.
-//
-timer += 366 + 365;
-temp = timer / ((4 * 365) + 1);
-if ((timer - (temp * ((4 * 365) + 1))) > (31 + 28))
-{
-    temp++;
-    months = 12;
-}
-else
-{
-    months = 2;
-}
-
-//
-// Extract the year.
-//
-tm->tm_year = ((timer - temp) / 365) + 68;
-timer -= ((tm->tm_year - 68) * 365) + temp;
-
-//
-// Extract the month.
-//
-for (temp = 0; temp < months; temp++)
-{
-    if (g_psDaysToMonth[temp] > timer)
+    //
+    // Compute the number of leap years that have occurred since 1968, the
+    // first leap year before 1970.  For the beginning of a leap year, cut the
+    // month loop below at March so that the leap day is classified as February
+    // 29 followed by March 1, instead of March 1 followed by another March 1.
+    //
+    timer += 366 + 365;
+    temp = timer / ((4 * 365) + 1);
+    if((timer - (temp * ((4 * 365) + 1))) > (31 + 28))
     {
-        break;
+        temp++;
+        months = 12;
     }
-}
-tm->tm_mon = temp - 1;
+    else
+    {
+        months = 2;
+    }
 
-//
-// Extract the day of the month.
-//
-tm->tm_mday = timer - g_psDaysToMonth[temp - 1] + 1;
+    //
+    // Extract the year.
+    //
+    tm->tm_year = ((timer - temp) / 365) + 68;
+    timer -= ((tm->tm_year - 68) * 365) + temp;
+
+    //
+    // Extract the month.
+    //
+    for(temp = 0; temp < months; temp++)
+    {
+        if(g_psDaysToMonth[temp] > timer)
+        {
+            break;
+        }
+    }
+    tm->tm_mon = temp - 1;
+
+    //
+    // Extract the day of the month.
+    //
+    tm->tm_mday = timer - g_psDaysToMonth[temp - 1] + 1;
 }
 
 //*****************************************************************************
@@ -944,68 +950,69 @@ tm->tm_mday = timer - g_psDaysToMonth[temp - 1] + 1;
 //! than \e t2, and -1 if \e t1 is less than \e t2.
 //
 //*****************************************************************************
-static int ucmptime(struct tm *t1, struct tm *t2)
-{
-//
-// Compare each field in descending signficance to determine if
-// greater than, less than, or equal.
-//
-if (t1->tm_year > t2->tm_year)
-{
-    return (1);
-}
-else if (t1->tm_year < t2->tm_year)
-{
-    return (-1);
-}
-else if (t1->tm_mon > t2->tm_mon)
-{
-    return (1);
-}
-else if (t1->tm_mon < t2->tm_mon)
-{
-    return (-1);
-}
-else if (t1->tm_mday > t2->tm_mday)
-{
-    return (1);
-}
-else if (t1->tm_mday < t2->tm_mday)
-{
-    return (-1);
-}
-else if (t1->tm_hour > t2->tm_hour)
-{
-    return (1);
-}
-else if (t1->tm_hour < t2->tm_hour)
-{
-    return (-1);
-}
-else if (t1->tm_min > t2->tm_min)
-{
-    return (1);
-}
-else if (t1->tm_min < t2->tm_min)
-{
-    return (-1);
-}
-else if (t1->tm_sec > t2->tm_sec)
-{
-    return (1);
-}
-else if (t1->tm_sec < t2->tm_sec)
-{
-    return (-1);
-}
-else
+static int
+ucmptime(struct tm *t1, struct tm *t2)
 {
     //
-    // Reaching this branch of the conditional means that all of the
-    // fields are equal, and thus the two times are equal.
+    // Compare each field in descending signficance to determine if
+    // greater than, less than, or equal.
     //
-    return (0);
-}
+    if(t1->tm_year > t2->tm_year)
+    {
+        return(1);
+    }
+    else if(t1->tm_year < t2->tm_year)
+    {
+        return(-1);
+    }
+    else if(t1->tm_mon > t2->tm_mon)
+    {
+        return(1);
+    }
+    else if(t1->tm_mon < t2->tm_mon)
+    {
+        return(-1);
+    }
+    else if(t1->tm_mday > t2->tm_mday)
+    {
+        return(1);
+    }
+    else if(t1->tm_mday < t2->tm_mday)
+    {
+        return(-1);
+    }
+    else if(t1->tm_hour > t2->tm_hour)
+    {
+        return(1);
+    }
+    else if(t1->tm_hour < t2->tm_hour)
+    {
+        return(-1);
+    }
+    else if(t1->tm_min > t2->tm_min)
+    {
+        return(1);
+    }
+    else if(t1->tm_min < t2->tm_min)
+    {
+        return(-1);
+    }
+    else if(t1->tm_sec > t2->tm_sec)
+    {
+        return(1);
+    }
+    else if(t1->tm_sec < t2->tm_sec)
+    {
+        return(-1);
+    }
+    else
+    {
+        //
+        // Reaching this branch of the conditional means that all of the
+        // fields are equal, and thus the two times are equal.
+        //
+        return(0);
+    }
 }
 
 //*****************************************************************************
@@ -1023,56 +1030,57 @@ else
 //! was not possible then the function returns (uint32_t)(-1).
 //
 //*****************************************************************************
-time_t umktime(struct tm *timeptr)
+time_t
+umktime(struct tm *timeptr)
 {
-struct tm sTimeGuess;
-unsigned long ulTimeGuess = 0x80000000;
-unsigned long ulAdjust = 0x40000000;
-int iSign;
-
-//
-// Seed the binary search with the first guess.
-//
-ulocaltime(ulTimeGuess, &sTimeGuess);
-iSign = ucmptime(timeptr, &sTimeGuess);
-
-//
-// While the time is not yet found, execute a binary search.
-//
-while (iSign && ulAdjust)
-{
-    //
-    // Adjust the time guess up or down depending on the result of the
-    // last compare.
-    //
-    ulTimeGuess = (
-            (iSign > 0) ? (ulTimeGuess + ulAdjust) : (ulTimeGuess - ulAdjust));
-    ulAdjust /= 2;
+    struct tm sTimeGuess;
+    unsigned long ulTimeGuess = 0x80000000;
+    unsigned long ulAdjust = 0x40000000;
+    int iSign;
 
     //
-    // Compare the new time guess against the time pointed at by the
-    // function parameters.
+    // Seed the binary search with the first guess.
     //
     ulocaltime(ulTimeGuess, &sTimeGuess);
     iSign = ucmptime(timeptr, &sTimeGuess);
-}
 
-//
-// If the above loop was exited with iSign == 0, that means that the
-// time in seconds was found, so return that value to the caller.
-//
-if (iSign == 0)
-{
-    return (ulTimeGuess);
-}
+    //
+    // While the time is not yet found, execute a binary search.
+    //
+    while(iSign && ulAdjust)
+    {
+        //
+        // Adjust the time guess up or down depending on the result of the
+        // last compare.
+        //
+        ulTimeGuess = ((iSign > 0) ? (ulTimeGuess + ulAdjust) :
+                       (ulTimeGuess - ulAdjust));
+        ulAdjust /= 2;
 
-//
-// Otherwise the time could not be converted so return an error.
-//
-else
-{
-    return ((unsigned long) -1);
-}
+        //
+        // Compare the new time guess against the time pointed at by the
+        // function parameters.
+        //
+        ulocaltime(ulTimeGuess, &sTimeGuess);
+        iSign = ucmptime(timeptr, &sTimeGuess);
+    }
+
+    //
+    // If the above loop was exited with iSign == 0, that means that the
+    // time in seconds was found, so return that value to the caller.
+    //
+    if(iSign == 0)
+    {
+        return(ulTimeGuess);
+    }
+
+    //
+    // Otherwise the time could not be converted so return an error.
+    //
+    else
+    {
+        return((unsigned long)-1);
+    }
 }
 
 //*****************************************************************************
@@ -1101,169 +1109,170 @@ ustrtoul(const char * restrict nptr, const char ** restrict endptr, int base)
     //
     // Check the arguments.
     //
-    ASSERT(nptr);ASSERT((base == 0) || ((base > 1) && (base <= 16)));
+    ASSERT(nptr);
+    ASSERT((base == 0) || ((base > 1) && (base <= 16)));
 
     //
     // Initially, the result is zero.
     //
-ulRet = 0;
-ulNeg = 0;
-ulValid = 0;
+    ulRet = 0;
+    ulNeg = 0;
+    ulValid = 0;
 
     //
     // Skip past any leading white space.
     //
-pcPtr = nptr;
-while((*pcPtr == ' ') || (*pcPtr == '\t'))
-{
-pcPtr++;
-}
+    pcPtr = nptr;
+    while((*pcPtr == ' ') || (*pcPtr == '\t'))
+    {
+        pcPtr++;
+    }
 
     //
     // Take a leading + or - from the value.
     //
-if(*pcPtr == '-')
-{
-ulNeg = 1;
-pcPtr++;
-}
-else if(*pcPtr == '+')
-{
-pcPtr++;
-}
+    if(*pcPtr == '-')
+    {
+        ulNeg = 1;
+        pcPtr++;
+    }
+    else if(*pcPtr == '+')
+    {
+        pcPtr++;
+    }
 
     //
     // See if the radix was not specified, or is 16, and the value starts with
     // "0x" or "0X" (to indicate a hex value).
     //
-if(((base == 0) || (base == 16)) && (*pcPtr == '0') &&
-    ((pcPtr[1] == 'x') || (pcPtr[1] == 'X')))
-{
-//
-// Skip the leading "0x".
-//
-pcPtr += 2;
-
-//
-// Set the radix to 16.
-//
-base = 16;
-}
+    if(((base == 0) || (base == 16)) && (*pcPtr == '0') &&
+       ((pcPtr[1] == 'x') || (pcPtr[1] == 'X')))
+    {
+        //
+        // Skip the leading "0x".
+        //
+        pcPtr += 2;
 
         //
-        // See if the radix was not specified.
+        // Set the radix to 16.
         //
-if(base == 0)
-{
-//
-// See if the value starts with "0".
-//
-if(*pcPtr == '0')
-{
+        base = 16;
+    }
+
     //
-    // Values that start with "0" are assumed to be radix 8.
+    // See if the radix was not specified.
     //
-    base = 8;
-}
-else
-{
+    if(base == 0)
+    {
+        //
+        // See if the value starts with "0".
+        //
+        if(*pcPtr == '0')
+        {
+            //
+            // Values that start with "0" are assumed to be radix 8.
+            //
+            base = 8;
+        }
+        else
+        {
+            //
+            // Otherwise, the values are assumed to be radix 10.
+            //
+            base = 10;
+        }
+    }
+
     //
-    // Otherwise, the values are assumed to be radix 10.
+    // Loop while there are more valid digits to consume.
     //
-    base = 10;
-}
-}
+    while(1)
+    {
+        //
+        // See if this character is a number.
+        //
+        if((*pcPtr >= '0') && (*pcPtr <= '9'))
+        {
+            //
+            // Convert the character to its integer equivalent.
+            //
+            ulDigit = *pcPtr++ - '0';
+        }
+
+        //
+        // Otherwise, see if this character is an upper case letter.
+        //
+        else if((*pcPtr >= 'A') && (*pcPtr <= 'Z'))
+        {
+            //
+            // Convert the character to its integer equivalent.
+            //
+            ulDigit = *pcPtr++ - 'A' + 10;
+        }
+
+        //
+        // Otherwise, see if this character is a lower case letter.
+        //
+        else if((*pcPtr >= 'a') && (*pcPtr <= 'z'))
+        {
+            //
+            // Convert the character to its integer equivalent.
+            //
+            ulDigit = *pcPtr++ - 'a' + 10;
+        }
+
+        //
+        // Otherwise, this is not a valid character.
+        //
+        else
+        {
+            //
+            // Stop converting this value.
+            //
+            break;
+        }
+
+        //
+        // See if this digit is valid for the chosen radix.
+        //
+        if(ulDigit >= base)
+        {
+            //
+            // Since this was not a valid digit, move the pointer back to the
+            // character that therefore should not have been consumed.
+            //
+            pcPtr--;
 
             //
-            // Loop while there are more valid digits to consume.
+            // Stop converting this value.
             //
-while(1)
-{
-//
-// See if this character is a number.
-//
-if((*pcPtr >= '0') && (*pcPtr <= '9'))
-{
-    //
-    // Convert the character to its integer equivalent.
-    //
-    ulDigit = *pcPtr++ - '0';
-}
-
-//
-// Otherwise, see if this character is an upper case letter.
-//
-else if((*pcPtr >= 'A') && (*pcPtr <= 'Z'))
-{
-    //
-    // Convert the character to its integer equivalent.
-    //
-    ulDigit = *pcPtr++ - 'A' + 10;
-}
-
-//
-// Otherwise, see if this character is a lower case letter.
-//
-else if((*pcPtr >= 'a') && (*pcPtr <= 'z'))
-{
-    //
-    // Convert the character to its integer equivalent.
-    //
-    ulDigit = *pcPtr++ - 'a' + 10;
-}
-
-//
-// Otherwise, this is not a valid character.
-//
-else
-{
-    //
-    // Stop converting this value.
-    //
-    break;
-}
-
-//
-// See if this digit is valid for the chosen radix.
-//
-if(ulDigit >= base)
-{
-    //
-    // Since this was not a valid digit, move the pointer back to the
-    // character that therefore should not have been consumed.
-    //
-    pcPtr--;
-
-    //
-    // Stop converting this value.
-    //
-    break;
-}
-
-//
-// Add this digit to the converted value.
-//
-ulRet *= base;
-ulRet += ulDigit;
-
-//
-// Since a digit has been added, this is now a valid result.
-//
-ulValid = 1;
-}
+            break;
+        }
 
         //
-        // Set the return string pointer to the first character not consumed.
+        // Add this digit to the converted value.
         //
-if(endptr)
-{
-*endptr = ulValid ? pcPtr : nptr;
-}
+        ulRet *= base;
+        ulRet += ulDigit;
+
+        //
+        // Since a digit has been added, this is now a valid result.
+        //
+        ulValid = 1;
+    }
+
+    //
+    // Set the return string pointer to the first character not consumed.
+    //
+    if(endptr)
+    {
+        *endptr = ulValid ? pcPtr : nptr;
+    }
 
     //
     // Return the converted value.
     //
-return(ulNeg ? (0 - ulRet) : ulRet);
+    return(ulNeg ? (0 - ulRet) : ulRet);
 }
 
 //*****************************************************************************
@@ -1273,8 +1282,15 @@ return(ulNeg ? (0 - ulRet) : ulRet);
 // 10^exp.
 //
 //*****************************************************************************
-static const float g_pfExponents[] = { 1.0e+01, 1.0e+02, 1.0e+04, 1.0e+08,
-                                       1.0e+16, 1.0e+32, };
+static const float g_pfExponents[] =
+{
+    1.0e+01,
+    1.0e+02,
+    1.0e+04,
+    1.0e+08,
+    1.0e+16,
+    1.0e+32,
+};
 
 //*****************************************************************************
 //
@@ -1293,175 +1309,176 @@ static const float g_pfExponents[] = { 1.0e+01, 1.0e+02, 1.0e+04, 1.0e+08,
 //! \return Returns the result of the conversion.
 //
 //*****************************************************************************
-float ustrtof(const char *nptr, const char **endptr)
+float
+ustrtof(const char *nptr, const char **endptr)
 {
-unsigned long ulNeg, ulExp, ulExpNeg, ulValid, ulIdx;
-float fRet, fDigit, fExp;
-const char *pcPtr;
+    unsigned long ulNeg, ulExp, ulExpNeg, ulValid, ulIdx;
+    float fRet, fDigit, fExp;
+    const char *pcPtr;
 
     //
     // Check the arguments.
     //
-ASSERT(nptr);
+    ASSERT(nptr);
 
     //
     // Initially, the result is zero.
     //
-fRet = 0;
-ulNeg = 0;
-ulValid = 0;
+    fRet = 0;
+    ulNeg = 0;
+    ulValid = 0;
 
     //
     // Skip past any leading white space.
     //
-pcPtr = nptr;
-while ((*pcPtr == ' ') || (*pcPtr == '\t'))
-{
-pcPtr++;
-}
+    pcPtr = nptr;
+    while((*pcPtr == ' ') || (*pcPtr == '\t'))
+    {
+        pcPtr++;
+    }
 
     //
     // Take a leading + or - from the value.
     //
-if (*pcPtr == '-')
-{
-ulNeg = 1;
-pcPtr++;
-}
-else if (*pcPtr == '+')
-{
-pcPtr++;
-}
+    if(*pcPtr == '-')
+    {
+        ulNeg = 1;
+        pcPtr++;
+    }
+    else if(*pcPtr == '+')
+    {
+        pcPtr++;
+    }
 
     //
     // Loop while there are valid digits to consume.
     //
-while ((*pcPtr >= '0') && (*pcPtr <= '9'))
-{
-//
-// Add this digit to the converted value.
-//
-fRet *= 10;
-fRet += *pcPtr++ - '0';
-
-//
-// Since a digit has been added, this is now a valid result.
-//
-ulValid = 1;
-}
-
-        //
-        // See if the next character is a period and the character after that is a
-        // digit, indicating the start of the fractional portion of the value.
-        //
-if ((*pcPtr == '.') && (pcPtr[1] >= '0') && (pcPtr[1] <= '9'))
-{
-//
-// Skip the period.
-//
-pcPtr++;
-
-//
-// Loop while there are valid fractional digits to consume.
-//
-fDigit = 0.1;
-while ((*pcPtr >= '0') && (*pcPtr <= '9'))
-{
-    //
-    // Add this digit to the converted value.
-    //
-    fRet += (*pcPtr++ - '0') * fDigit;
-    fDigit /= (float) 10.0;
-
-    //
-    // Since a digit has been added, this is now a valid result.
-    //
-    ulValid = 1;
-}
-}
-
-            //
-            // See if the next character is an "e" and a valid number has been
-            // converted, indicating the start of the exponent.
-            //
-if (((pcPtr[0] == 'e') || (pcPtr[0] == 'E')) && (ulValid == 1)
-    && (((pcPtr[1] >= '0') && (pcPtr[1] <= '9'))
-            || (((pcPtr[1] == '+') || (pcPtr[1] == '-')) && (pcPtr[2] >= '0')
-                    && (pcPtr[2] <= '9'))))
-{
-//
-// Skip the "e".
-//
-pcPtr++;
-
-//
-// Take a leading + or - from the exponenet.
-//
-ulExpNeg = 0;
-if (*pcPtr == '-')
-{
-    ulExpNeg = 1;
-    pcPtr++;
-}
-else if (*pcPtr == '+')
-{
-    pcPtr++;
-}
-
-//
-// Loop while there are valid digits in the exponent.
-//
-ulExp = 0;
-while ((*pcPtr >= '0') && (*pcPtr <= '9'))
-{
-    //
-    // Add this digit to the converted value.
-    //
-    ulExp *= 10;
-    ulExp += *pcPtr++ - '0';
-}
-
-//
-// Raise ten to the power of the exponent.  Do this via binary
-// decomposition; for each binary bit set in the exponent, multiply the
-// floating-point representation by ten raised to that binary value
-// (extracted from the table above).
-//
-fExp = 1;
-for (ulIdx = 0; ulIdx < 7; ulIdx++)
-{
-    if (ulExp & (1 << ulIdx))
+    while((*pcPtr >= '0') && (*pcPtr <= '9'))
     {
-        fExp *= g_pfExponents[ulIdx];
+        //
+        // Add this digit to the converted value.
+        //
+        fRet *= 10;
+        fRet += *pcPtr++ - '0';
+
+        //
+        // Since a digit has been added, this is now a valid result.
+        //
+        ulValid = 1;
     }
-}
 
-//
-// If the exponent is negative, then the exponent needs to be inverted.
-//
-if (ulExpNeg == 1)
-{
-    fExp = 1 / fExp;
-}
-
-//
-// Multiply the result by the computed exponent value.
-//
-fRet *= fExp;
-}
+    //
+    // See if the next character is a period and the character after that is a
+    // digit, indicating the start of the fractional portion of the value.
+    //
+    if((*pcPtr == '.') && (pcPtr[1] >= '0') && (pcPtr[1] <= '9'))
+    {
+        //
+        // Skip the period.
+        //
+        pcPtr++;
 
         //
-        // Set the return string pointer to the first character not consumed.
+        // Loop while there are valid fractional digits to consume.
         //
-if (endptr)
-{
-*endptr = ulValid ? pcPtr : nptr;
-}
+        fDigit = 0.1;
+        while((*pcPtr >= '0') && (*pcPtr <= '9'))
+        {
+            //
+            // Add this digit to the converted value.
+            //
+            fRet += (*pcPtr++ - '0') * fDigit;
+            fDigit /= (float)10.0;
+
+            //
+            // Since a digit has been added, this is now a valid result.
+            //
+            ulValid = 1;
+        }
+    }
+
+    //
+    // See if the next character is an "e" and a valid number has been
+    // converted, indicating the start of the exponent.
+    //
+    if(((pcPtr[0] == 'e') || (pcPtr[0] == 'E')) && (ulValid == 1) &&
+       (((pcPtr[1] >= '0') && (pcPtr[1] <= '9')) ||
+        (((pcPtr[1] == '+') || (pcPtr[1] == '-')) &&
+         (pcPtr[2] >= '0') && (pcPtr[2] <= '9'))))
+    {
+        //
+        // Skip the "e".
+        //
+        pcPtr++;
+
+        //
+        // Take a leading + or - from the exponenet.
+        //
+        ulExpNeg = 0;
+        if(*pcPtr == '-')
+        {
+            ulExpNeg = 1;
+            pcPtr++;
+        }
+        else if(*pcPtr == '+')
+        {
+            pcPtr++;
+        }
+
+        //
+        // Loop while there are valid digits in the exponent.
+        //
+        ulExp = 0;
+        while((*pcPtr >= '0') && (*pcPtr <= '9'))
+        {
+            //
+            // Add this digit to the converted value.
+            //
+            ulExp *= 10;
+            ulExp += *pcPtr++ - '0';
+        }
+
+        //
+        // Raise ten to the power of the exponent.  Do this via binary
+        // decomposition; for each binary bit set in the exponent, multiply the
+        // floating-point representation by ten raised to that binary value
+        // (extracted from the table above).
+        //
+        fExp = 1;
+        for(ulIdx = 0; ulIdx < 7; ulIdx++)
+        {
+            if(ulExp & (1 << ulIdx))
+            {
+                fExp *= g_pfExponents[ulIdx];
+            }
+        }
+
+        //
+        // If the exponent is negative, then the exponent needs to be inverted.
+        //
+        if(ulExpNeg == 1)
+        {
+            fExp = 1 / fExp;
+        }
+
+        //
+        // Multiply the result by the computed exponent value.
+        //
+        fRet *= fExp;
+    }
+
+    //
+    // Set the return string pointer to the first character not consumed.
+    //
+    if(endptr)
+    {
+        *endptr = ulValid ? pcPtr : nptr;
+    }
 
     //
     // Return the converted value.
     //
-return (ulNeg ? (0 - fRet) : fRet);
+    return(ulNeg ? (0 - fRet) : fRet);
 }
 
 //*****************************************************************************
@@ -1480,32 +1497,33 @@ return (ulNeg ? (0 - fRet) : fRet);
 //! \return Returns the length of the string pointed to by \e s.
 //
 //*****************************************************************************
-size_t ustrlen(const char *s)
+size_t
+ustrlen(const char *s)
 {
-size_t len;
+    size_t len;
 
     //
     // Check the arguments.
     //
-ASSERT(s);
+    ASSERT(s);
 
     //
     // Initialize the length.
     //
-len = 0;
+    len = 0;
 
     //
     // Step throug the string looking for a zero character (marking its end).
     //
-while (s[len])
-{
-//
-// Zero not found so move on to the next character.
-//
-len++;
-}
+    while(s[len])
+    {
+        //
+        // Zero not found so move on to the next character.
+        //
+        len++;
+    }
 
-return (len);
+    return(len);
 }
 
 //*****************************************************************************
@@ -1528,40 +1546,40 @@ return (len);
 char *
 ustrstr(const char *s1, const char *s2)
 {
-size_t n;
+    size_t n;
 
-        //
-        // Get the length of the string to be found.
-        //
-n = ustrlen(s2);
+    //
+    // Get the length of the string to be found.
+    //
+    n = ustrlen(s2);
 
     //
     // Loop while we have not reached the end of the string.
     //
-while (*s1)
-{
-//
-// Check to see if the substring appears at this position.
-//
-if (ustrncmp(s2, s1, n) == 0)
-{
-    //
-    // It does so return the pointer.
-    //
-    return ((char *) s1);
-}
-
-//
-// Move to the next position in the string being searched.
-//
-s1++;
-}
+    while(*s1)
+    {
+        //
+        // Check to see if the substring appears at this position.
+        //
+        if(ustrncmp(s2, s1, n) == 0)
+        {
+            //
+            // It does so return the pointer.
+            //
+            return((char *)s1);
+        }
 
         //
-        // We reached the end of the string without finding the substring so
-        // return NULL.
+        // Move to the next position in the string being searched.
         //
-return ((char *) 0);
+        s1++;
+    }
+
+    //
+    // We reached the end of the string without finding the substring so
+    // return NULL.
+    //
+    return((char *)0);
 }
 
 //*****************************************************************************
@@ -1582,56 +1600,57 @@ return ((char *) 0);
 //! than \e s2 and 1 if \e s1 is greater than \e s2.
 //
 //*****************************************************************************
-int ustrncasecmp(const char *s1, const char *s2, size_t n)
+int
+ustrncasecmp(const char *s1, const char *s2, size_t n)
 {
-char c1, c2;
+    char c1, c2;
 
     //
     // Loop while there are more characters to compare.
     //
-while (n)
-{
-//
-// If we reached a NULL in both strings, they must be equal so
-// we end the comparison and return 0
-//
-if (!*s1 && !*s2)
-{
-    return (0);
-}
-
-//
-// Lower case the characters at the current position before we compare.
-//
-c1 = (((*s1 >= 'A') && (*s1 <= 'Z')) ? (*s1 + ('a' - 'A')) : *s1);
-c2 = (((*s2 >= 'A') && (*s2 <= 'Z')) ? (*s2 + ('a' - 'A')) : *s2);
-
-//
-// Compare the two characters and, if different, return the relevant
-// return code.
-//
-if (c2 < c1)
-{
-    return (1);
-}
-if (c1 < c2)
-{
-    return (-1);
-}
-
-//
-// Move on to the next character.
-//
-s1++;
-s2++;
-n--;
-}
+    while(n)
+    {
+        //
+        // If we reached a NULL in both strings, they must be equal so
+        // we end the comparison and return 0
+        //
+        if(!*s1 && !*s2)
+        {
+            return(0);
+        }
 
         //
-        // If we fall out, the strings must be equal for at least the first n
-        // characters so return 0 to indicate this.
+        // Lower case the characters at the current position before we compare.
         //
-return (0);
+        c1 = (((*s1 >= 'A') && (*s1 <= 'Z')) ? (*s1 + ('a' - 'A')) : *s1);
+        c2 = (((*s2 >= 'A') && (*s2 <= 'Z')) ? (*s2 + ('a' - 'A')) : *s2);
+
+        //
+        // Compare the two characters and, if different, return the relevant
+        // return code.
+        //
+        if(c2 < c1)
+        {
+            return(1);
+        }
+        if(c1 < c2)
+        {
+            return(-1);
+        }
+
+        //
+        // Move on to the next character.
+        //
+        s1++;
+        s2++;
+        n--;
+    }
+
+    //
+    // If we fall out, the strings must be equal for at least the first n
+    // characters so return 0 to indicate this.
+    //
+    return(0);
 }
 
 //*****************************************************************************
@@ -1650,12 +1669,13 @@ return (0);
 //! than \e s2 and 1 if \e s1 is greater than \e s2.
 //
 //*****************************************************************************
-int ustrcasecmp(const char *s1, const char *s2)
+int
+ustrcasecmp(const char *s1, const char *s2)
 {
     //
     // Just let ustrncasecmp() handle this.
     //
-return (ustrncasecmp(s1, s2, (size_t) -1));
+    return(ustrncasecmp(s1, s2, (size_t)-1));
 }
 
 //*****************************************************************************
@@ -1676,48 +1696,49 @@ return (ustrncasecmp(s1, s2, (size_t) -1));
 //! than \e s2 and 1 if \e s1 is greater than \e s2.
 //
 //*****************************************************************************
-int ustrncmp(const char *s1, const char *s2, size_t n)
+int
+ustrncmp(const char *s1, const char *s2, size_t n)
 {
     //
     // Loop while there are more characters.
     //
-while (n)
-{
-//
-// If we reached a NULL in both strings, they must be equal so we end
-// the comparison and return 0
-//
-if (!*s1 && !*s2)
-{
-    return (0);
-}
-
-//
-// Compare the two characters and, if different, return the relevant
-// return code.
-//
-if (*s2 < *s1)
-{
-    return (1);
-}
-if (*s1 < *s2)
-{
-    return (-1);
-}
-
-//
-// Move on to the next character.
-//
-s1++;
-s2++;
-n--;
-}
+    while(n)
+    {
+        //
+        // If we reached a NULL in both strings, they must be equal so we end
+        // the comparison and return 0
+        //
+        if(!*s1 && !*s2)
+        {
+            return(0);
+        }
 
         //
-        // If we fall out, the strings must be equal for at least the first n
-        // characters so return 0 to indicate this.
+        // Compare the two characters and, if different, return the relevant
+        // return code.
         //
-return (0);
+        if(*s2 < *s1)
+        {
+            return(1);
+        }
+        if(*s1 < *s2)
+        {
+            return(-1);
+        }
+
+        //
+        // Move on to the next character.
+        //
+        s1++;
+        s2++;
+        n--;
+    }
+
+    //
+    // If we fall out, the strings must be equal for at least the first n
+    // characters so return 0 to indicate this.
+    //
+    return(0);
 }
 
 //*****************************************************************************
@@ -1736,12 +1757,13 @@ return (0);
 //! than \e s2 and 1 if \e s1 is greater than \e s2.
 //
 //*****************************************************************************
-int ustrcmp(const char *s1, const char *s2)
+int
+ustrcmp(const char *s1, const char *s2)
 {
     //
     // Pass this on to ustrncmp.
     //
-return (ustrncmp(s1, s2, (size_t) -1));
+    return(ustrncmp(s1, s2, (size_t)-1));
 }
 
 //*****************************************************************************
@@ -1764,9 +1786,10 @@ static unsigned int g_iRandomSeed = 1;
 //! \return None
 //
 //*****************************************************************************
-void usrand(unsigned int seed)
+void
+usrand(unsigned int seed)
 {
-g_iRandomSeed = seed;
+    g_iRandomSeed = seed;
 }
 
 //*****************************************************************************
@@ -1779,19 +1802,20 @@ g_iRandomSeed = seed;
 //! \return A pseudo-random number will be returned.
 //
 //*****************************************************************************
-int urand(void)
+int
+urand(void)
 {
     //
     // Generate a new pseudo-random number with a linear congruence random
     // number generator.  This new random number becomes the seed for the next
     // random number.
     //
-g_iRandomSeed = (g_iRandomSeed * 1664525) + 1013904223;
+    g_iRandomSeed = (g_iRandomSeed * 1664525) + 1013904223;
 
     //
     // Return the new random number.
     //
-return ((int) g_iRandomSeed);
+    return((int)g_iRandomSeed);
 }
 
 //*****************************************************************************

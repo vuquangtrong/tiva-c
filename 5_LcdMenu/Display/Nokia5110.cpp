@@ -18,25 +18,13 @@
 
 Nokia5110::Nokia5110()
 {
-    initNokia5110();
-}
-
-void Nokia5110::initNokia5110()
-{
-    static bool __isNokia5110Initialized = false;
-
-    if (__isNokia5110Initialized)
-    {
-        return;
-    }
-
     // we use SSI0 on port A
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
     while (!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOA))
     {
     }
 
-#ifdef USE_SLEEP_MODE_DISPLAY
+#if USE_SLEEP_MODE_DISPLAY
     // enable the peripheral in sleep mode
     SysCtlPeripheralSleepEnable(SYSCTL_PERIPH_GPIOA);
     SysCtlPeripheralDeepSleepEnable(SYSCTL_PERIPH_GPIOA);
@@ -60,7 +48,7 @@ void Nokia5110::initNokia5110()
     {
     }
 
-#if USE_IN_SLEEP_MODE_DISPLAY
+#if USE_SLEEP_MODE_DISPLAY
     // enable the peripheral in sleep mode
     SysCtlPeripheralSleepEnable(SYSCTL_PERIPH_SSI0);
     SysCtlPeripheralDeepSleepEnable(SYSCTL_PERIPH_SSI0);
@@ -95,8 +83,6 @@ void Nokia5110::initNokia5110()
     command(COMMAND, DISPLAY_MODE); // normal display, not inverse
 
     clear();
-
-    __isNokia5110Initialized = true;
 }
 
 void Nokia5110::command(uint8_t type, uint8_t data)
@@ -185,4 +171,9 @@ void Nokia5110::setBacklight(bool on)
     {
         GPIOPinWrite(GPIO_PORTA_BASE, PIN_BL, PIN_BL);
     }
+}
+
+void Nokia5110::setBrightness(uint8_t val)
+{
+
 }

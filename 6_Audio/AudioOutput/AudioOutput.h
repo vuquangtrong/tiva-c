@@ -15,26 +15,23 @@
 #include "MCP4921.h"
 #include "AudioGeneration/AudioMixer.h"
 
-
-
 class AudioOutput
 {
 public:
-    static AudioOutput& getIntance()
+    static AudioOutput& getInstance()
     {
-        static AudioOutput __intance;
-        return __intance;
+        static AudioOutput __instance;
+        return __instance;
     }
 
     AudioMixer* getAudioMixer();
-    void output(uint16_t voltage);
-    void test();
+    void playSampleAudio();
 
 private:
-    AudioOutput();
     MCP4921* _mcp4921;
     AudioMixer _audioMixer;
 
+    AudioOutput();
 };
 
 #endif /* AUDIOOUTPUT_AUDIOOUTPUT_H_ */

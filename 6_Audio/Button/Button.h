@@ -15,28 +15,30 @@
 #pragma once
 
 #include <stdint.h>
-#include "ButtonHandler.h"
-
-// below definition will be use to calculate the number of SYSTICK
-#define DEBOUNCE_DELAY      20 // milliseconds
-#define SINGLECLICK_DELAY   200 // milliseconds
-#define LONGCLICK_DELAY     600 // milliseconds
 
 class Button
 {
 public:
-    enum
+    enum Settings
     {
         ACTIVE_LOW, // press down makes input = 0
-        ACTIVE_HIGH // press down makes input = Vcc
+        ACTIVE_HIGH, // press down makes input = Vcc
+        // below definition will be use to calculate the number of SYSTICK
+        DEBOUNCE_DELAY = 20, // milliseconds
+        SINGLECLICK_DELAY = 200, // milliseconds
+        LONGCLICK_DELAY = 600 // milliseconds
     };
 
     Button();
+    virtual ~Button();
+    virtual void init() = 0;
+    virtual void onClick() = 0;
+    virtual void onDoubleClick() = 0;
+    virtual void onHold() = 0;
+    virtual void onRelease() = 0;
     void checkState();
-    void setActiveLevel(uint8_t level);
-    void setGPIO(uint32_t port, uint8_t pin);
-    void setButtonHandler(ButtonHandler* buttonHandler);
-    bool getRawState();
+    void config(uint32_t port, uint8_t pin, uint8_t level = ACTIVE_LOW);
+    bool isPressed();
 
 private:
 
@@ -115,7 +117,6 @@ private:
     uint32_t _port;
     uint8_t _pin;
     uint8_t _active_level;
-    ButtonHandler* _buttonHandler;
 
     uint32_t _debounce_delay;
     uint32_t _singleClick_delay;
@@ -123,7 +124,6 @@ private:
     uint32_t _lastTransition;
     uint32_t _tick;
     State _state;
-    bool _new;
 
     State _checkIdle(bool pressed, uint32_t diff);
     State _checkDebounce(bool pressed, uint32_t diff);
