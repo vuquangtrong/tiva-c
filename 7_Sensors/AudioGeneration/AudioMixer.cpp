@@ -13,7 +13,6 @@
 #include "AudioGeneration/AudioMixer.h"
 #include "AudioGeneration/Oscillator.h"
 #include "AudioGeneration/NoteFrequencyTable.h"
-#include "Logger/Logger.h"
 
 AudioMixer::AudioMixer() :
         _sampleCount(0), _midiNoteIndex(NO_MIDI_NOTE)
@@ -124,4 +123,8 @@ void AudioMixer::getAudioData(uint16_t buffer[], uint32_t bufferSampleSize)
     }
 #endif
     _sampleCount += bufferSampleSize;
+}
+
+uint8_t AudioMixer::getMidiNote() {
+    return _midiNoteIndex;
 }
