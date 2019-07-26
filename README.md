@@ -9,7 +9,7 @@ Please kindly check sub-folders for more project details:
 
 This bringup project use _SysTick_ interrupt as the main task which periodically check buttons states and drives LED. It also be used to refresh LCD, read inputs, send data. You can add conditions before starting any action in SysTick routine.
 
-# [2. Sleep Mode](./1_SleepMode)
+# [2. Sleep Mode](./2_SleepMode)
 
 In the [*BringUp*](./1_BringUp) project, main loop calls `WaitForInterrupt();` to enter sleep mode. Does it actually do what you want?
 This project includes `CpuUsage` module to monitor the number of clock cycles in which CPU actually does something. Between _SYSTICK_ cycle, CPU only uses some of its clock cycle to do its jobs. _TIMER2_ will only count those clock cycle when CPU is working.
