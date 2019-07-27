@@ -30,6 +30,9 @@ BMP280::BMP280()
     __isBlowing = false;
     __isDrawing = false;
 #endif
+#if USE_KALMAN_FILTER
+    _kalman_filter.setup(10, 10, 0.01);
+#endif
 }
 
 void BMP280::init(uint32_t i2cBase, uint8_t addr)
@@ -291,7 +294,8 @@ void BMP280::scan()
 
     case READ_PRESSURE:
         getRawPressure();
-        _pressure = filter(getPressure());
+        _pressureRaw = getPressure();
+        _pressureFiltered = filter(_pressureRaw);
         if (_state_count == SYSTICKS_PER_SECOND)
         {
             _state_count = 0;
@@ -308,12 +312,19 @@ void BMP280::scan()
     }
 
 #if PROBE_SENSOR_DATA
-    return _pressure;
+    return _pressureFiltered;
 #endif
 #if USE_MIDI_UART
-    playNote(_pressure);
+    playNote(_pressureFiltered);
 #endif
 }
+
+#if USE_KALMAN_FILTER
+int32_t BMP280::getKalman()
+{
+    return _kalman_filter.updateEstimate(_pressureRaw);
+}
+#endif
 
 int32_t BMP280::getMin()
 {
@@ -363,6 +374,9 @@ int32_t BMP280::filter(int32_t input)
     }
     else
     {
+#if USE_KALMAN_FILTER
+        output = _kalman_filter.updateEstimate(input);
+#else
         __filterSum = __filterSum - __filter[__filterIndex];
 
         if (input > __max || input < __min)
@@ -396,6 +410,7 @@ int32_t BMP280::filter(int32_t input)
         {
             output = __avg;
         }
+#endif
     }
 
     return output;

@@ -106,8 +106,10 @@ Sensors::Sensors()
         GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_0 | GPIO_PIN_1, 1 << i);
         _bmp280s[i].init(I2C0_BASE);
     }
+#if USE_MIDI_UART
     _bmp280s[0].setNotes(72, 74);
     _bmp280s[1].setNotes(76, 77);
+#endif
 #endif
 #endif
 }
@@ -135,7 +137,13 @@ void Sensors::readSensors()
     {
         GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_0 | GPIO_PIN_1, 1 << i);
 #if PROBE_SENSOR_DATA
+#if USE_KALMAN_FILTER
+        Logger::getInstance().printf("%d %d %d ", _bmp280s[i].scan(),
+                _bmp280s[i].getRaw(),
+                _bmp280s[i].getKalman());
+#else
         Logger::getInstance().printf("%d ", _bmp280s[i].scan());
+#endif
 #else
         _bmp280s[i].scan();
 #endif

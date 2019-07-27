@@ -1,11 +1,14 @@
 Tiva C TM4C123G LaunchPad Sensors
 =================================
 
-This project shows you how to use `I2C` to communicate with `BMP180/ BMP280 Barometric Pressure Sensors`. This project supports multiple I2C slave devices. The data from sersor is filtered to remove noise and glitch. 
+This project shows you how to use `I2C` to communicate with `BMP180/ BMP280 Barometric Pressure Sensors`. This project supports multiple I2C slave devices. The data from sersor is filtered to remove noise and glitch. This is an option to use my filter or a simple Kalman filter.
 
 ![raw_data.jpg](./raw_data.jpg)
 ![filtered.jpg](./filtered.jpg)
 ![two_channels.jpg](./two_channels.jpg)
+![kalman1.jpg](./kalman1.jpg)
+![kalman2.jpg](./kalman2.jpg)
+![kalman3.jpg](./kalman3.jpg)
 
 **Hardware**
 

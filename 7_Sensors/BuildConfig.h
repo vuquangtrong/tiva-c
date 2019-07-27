@@ -31,4 +31,5 @@
 #define PROBE_SENSOR_DATA       (DISABLED)
 #define USE_SENSOR_ADDR         (DISABLED)
 #define USE_MIDI_UART           (ENABLED)
+#define USE_KALMAN_FILTER       (ENABLED)
 #endif /* BUILDCONFIG_H_ */

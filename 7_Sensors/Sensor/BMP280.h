@@ -12,7 +12,9 @@
 
 #include <stdint.h>
 #include "BuildConfig.h"
-
+#if USE_KALMAN_FILTER
+#include "SimpleKalmanFilter/SimpleKalmanFilter.h"
+#endif
 /* BMP280 is set as ULTRA LOW POWER mode as default */
 
 class BMP280
@@ -34,7 +36,7 @@ public:
         REG_TEMPUERATURE_DATA = 0xFA,
         REQUEST_SOFT_RESET = 0xB6,
         FILTER_BUFFER = 5,
-        THRESHOLD = 1000
+        THRESHOLD = 1200
     };
 
     enum T_Sampling
@@ -125,6 +127,17 @@ public:
 #if USE_MIDI_UART
     void setNotes(uint8_t blow, uint8_t draw);
 #endif
+    int32_t getFiltered()
+    {
+        return _pressureFiltered;
+    }
+    uint32_t getRaw()
+    {
+        return _pressureRaw;
+    }
+#if USE_KALMAN_FILTER
+    int32_t getKalman();
+#endif
     int32_t getMin();
     int32_t getMax();
 
@@ -147,11 +160,8 @@ private:
     uint8_t _pressureRawVal[3];
     int32_t _t_fine;
     int32_t _temperature;
-    int32_t _pressure;
-
-    void getRawTemperature();
-    void getRawPressure();
-    int32_t filter(int32_t input);
+    int32_t _pressureFiltered;
+    int32_t _pressureRaw;
 #if USE_MIDI_UART
     uint8_t _blowNote;
     uint8_t _drawNote;
@@ -159,6 +169,14 @@ private:
     bool __isDrawing;
     void playNote(int32_t value);
 #endif
+#if USE_KALMAN_FILTER
+    SimpleKalmanFilter _kalman_filter;
+#endif
+
+    void getRawTemperature();
+    void getRawPressure();
+    int32_t filter(int32_t input);
+
     void read(uint8_t reg_addr, uint8_t* result, uint8_t length);
     void write(uint8_t reg_addr, uint8_t data);
 };
