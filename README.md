@@ -7,7 +7,7 @@ Board and peripherals:
 
 <img src="./setup.jpg" alt="setup.jpg" width="200px"/>
 
-Play music note on presure sensors:
+Play music note on presure sensors: [pressure_to_sound.mp4](./pressure_to_sound.mp4)
 
 <video controls="controls" autoplay="autoplay" width="200px">
   <source src="./pressure_to_sound.mp4" type="video/mp4" />
