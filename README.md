@@ -1,9 +1,17 @@
 Tiva C TM4C123G LaunchPad
 =========================
 
-This is my practice on an ARM Cortex-M4F processor ([Tiva LaunchPad TM4C123G](http://www.ti.com/tool/ek-tm4c123gxl))
+This is my practice on an ARM Cortex-M4F processor ([Tiva LaunchPad TM4C123G](http://www.ti.com/tool/ek-tm4c123gxl)). Please kindly check sub-folders for more project details.
 
-Please kindly check sub-folders for more project details:
+Board and peripherals:
+
+<img src="./setup.jpg" alt="setup.jpg" width="200px"/>
+
+Play music note on presure sensors:
+
+<video controls="controls" autoplay="autoplay" width="200px">
+  <source src="./pressure_to_sound.mp4" type="video/mp4" />
+</video>
 
 # [1. Bring Up](./1_BringUp)
 

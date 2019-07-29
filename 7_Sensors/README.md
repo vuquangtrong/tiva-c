@@ -3,6 +3,13 @@ Tiva C TM4C123G LaunchPad Sensors
 
 This project shows you how to use `I2C` to communicate with `BMP180/ BMP280 Barometric Pressure Sensors`. This project supports multiple I2C slave devices. The data from sersor is filtered to remove noise and glitch. This is an option to use my filter or a simple Kalman filter.
 
+The filtered pressure value is then used to make musical notes, via on-broard synthesizer with DAC or via PC's MIDI synthesizer. See the demo video:
+
+<video controls="controls" autoplay="autoplay" width="200px">
+  <source src="../pressure_to_sound.mp4" type="video/mp4" />
+</video>
+
+
 ![raw_data.jpg](./raw_data.jpg)
 ![filtered.jpg](./filtered.jpg)
 ![two_channels.jpg](./two_channels.jpg)
